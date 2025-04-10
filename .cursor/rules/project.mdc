@@ -13,11 +13,18 @@ This project is organized into two main components: the `frontend` and the `back
 
 - **frontend/**: This directory contains all the client-side code. It should include:
   - `src/`: Source code for the frontend application.
+  - `src/pages`: React pages.
+  - `src/components`: React components.
+  - `src/redux`: Redux store, selectors, reducers.
+  - `src/services`: Custom services.
+  - `src/utils`: Utility classes.
+  - `src/hooks`: Custom hooks.
   - `public/`: Static files and assets.
   - `tests/`: Unit and integration tests for the frontend.
 
 - **backend/**: This directory contains all the server-side code. It should include:
   - `src/`: Source code for the backend application.
+  - `src/routes`: Backend custom routes.
   - `config/`: Configuration files for the backend.
   - `tests/`: Unit and integration tests for the backend.
 
