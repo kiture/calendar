@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure Rules
+
+## Overview
+
+This project is organized into two main components: the `frontend` and the `backend`. Each component has its own directory and should adhere to the following guidelines to maintain consistency and clarity.
+
+## Directory Structure
+
+- **frontend/**: This directory contains all the client-side code. It should include:
+  - `src/`: Source code for the frontend application.
+  - `public/`: Static files and assets.
+  - `tests/`: Unit and integration tests for the frontend.
+
+- **backend/**: This directory contains all the server-side code. It should include:
+  - `src/`: Source code for the backend application.
+  - `config/`: Configuration files for the backend.
+  - `tests/`: Unit and integration tests for the backend.
+
+## General Guidelines
+
+- All code should be organized logically within the `src` directories of their respective components.
+- Tests should be placed in the `tests` directory and should mirror the structure of the `src` directory to ensure easy navigation and maintenance.
+- Configuration files should be stored in the `config` directory within the `backend` to separate code from configuration.
+
+## Naming Conventions
+
+- Use `camelCase` for variable and function names.
+- Use `PascalCase` for class names.
+- Use `kebab-case` for filenames and directory names.
+
+## Version Control
+
+- Ensure all changes are committed with meaningful commit messages.
+- Follow the branching strategy defined in the project documentation.
+
+## Documentation
+
+- All public functions and classes should have accompanying documentation comments.
+- Update the `README.md` file with any changes that affect the setup or usage of the project.
