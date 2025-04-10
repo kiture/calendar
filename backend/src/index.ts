@@ -9,9 +9,9 @@ app.use(express.json());
 app.use('/api/user', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World');
+  res.send('Hello World');
 });
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });

@@ -1,31 +1,34 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AppState } from "../model/AppState";
-import { environment } from "../environments";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AppState } from '../model/AppState';
+import { environment } from '../environments';
 
 const initialState: AppState = {
-  appTitle: "Events Calendar",
+  appTitle: 'Events Calendar',
   user: null,
   status: null,
 };
 
-export const fetchUser = createAsyncThunk("app/fetchUser", async ({ name, password }: { name: string, password: string }) => {
-  const response = await fetch(`${environment.apiUrl}/api/user`, {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name, password }),
-  });
+export const fetchUser = createAsyncThunk(
+  'app/fetchUser',
+  async ({ name, password }: { name: string; password: string }) => {
+    const response = await fetch(`${environment.apiUrl}/api/user`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, password }),
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch user');
+    if (!response.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    return response.json();
   }
-
-  return response.json();
-});
+);
 
 export const appSlice = createSlice({
-  name: "app",
+  name: 'app',
   initialState,
   reducers: {
     setUser: (state, action) => {
@@ -40,7 +43,7 @@ export const appSlice = createSlice({
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.user = null;
-        state.status = { error: action.error.message || "Unknown error" };
+        state.status = { error: action.error.message || 'Unknown error' };
       })
       .addCase(fetchUser.pending, (state) => {
         state.user = null;

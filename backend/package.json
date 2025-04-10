@@ -14,17 +14,12 @@
     "pg": "^8.14.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.24.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
-    "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.1.1",
     "express": "^5.1.0",
     "globals": "^16.0.0",
-    "prettier": "3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.29.1"
+    "typescript": "^5.8.3"
   }
 }

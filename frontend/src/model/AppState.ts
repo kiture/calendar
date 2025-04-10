@@ -1,12 +1,12 @@
-import { User } from "./User";
+import { User } from './User';
 
 export type ErrorStatus = {
   error: string;
-}
+};
 
 export type LoadingStatus = {
   loading: boolean;
-}
+};
 
 export type AppStatus = ErrorStatus | LoadingStatus;
 
