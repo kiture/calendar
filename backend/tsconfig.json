@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "strict": true,
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/types": ["../shared/types"],
+      "@shared/types/*": ["../shared/types/*"]
+    }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../shared/types/db.types.ts"],
   "exclude": ["node_modules"]
 }

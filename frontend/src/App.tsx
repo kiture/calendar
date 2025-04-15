@@ -1,12 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAppTitle } from './redux/appSelectors';
-import { fetchUser } from './redux/appReducer';
+import { selectAppTitle } from './redux/app/app.selectors';
+import { fetchUser } from './redux/app/app.reducer';
 import { AppDispatch } from './redux/store';
+import { useEffect } from 'react';
 
 function App() {
   const appTitle = useSelector(selectAppTitle);
 
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    
+  }, []);
+
   return (
     <>
       <p className="text-3xl font-bold underline">{appTitle}</p>

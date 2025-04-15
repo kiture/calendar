@@ -1,4 +1,4 @@
-import { User } from './User';
+import { UserDto } from '@shared/types/UserDto';
 
 export type ErrorStatus = {
   error: string;
@@ -8,10 +8,12 @@ export type LoadingStatus = {
   loading: boolean;
 };
 
-export type AppStatus = ErrorStatus | LoadingStatus;
+export type InitializingStatus = object;
+
+export type AppStatus = ErrorStatus | LoadingStatus | InitializingStatus;
 
 export interface AppState {
   appTitle: string;
-  user: User | null;
+  user: UserDto | null;
   status: AppStatus | null;
 }

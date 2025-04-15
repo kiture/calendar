@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AppState } from '../model/AppState';
-import { environment } from '../environments';
+import { AppState } from '../../model/AppState';
+import { getConfig } from '../../service/config.service';
 
 const initialState: AppState = {
   appTitle: 'Events Calendar',
@@ -11,7 +11,8 @@ const initialState: AppState = {
 export const fetchUser = createAsyncThunk(
   'app/fetchUser',
   async ({ name, password }: { name: string; password: string }) => {
-    const response = await fetch(`${environment.apiUrl}/api/user`, {
+    const config = getConfig();
+    const response = await fetch(`${config.apiUrl}/api/user`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
