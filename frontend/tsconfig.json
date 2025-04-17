@@ -2,8 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/types": ["../shared/types"],
-      "@shared/types/*": ["../shared/types/*"]
+      "@shared/types": ["src/types"],
+      "@shared/types/*": ["src/types/*"]
     }
   },
   "files": [],
@@ -11,5 +11,5 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "include": ["src/**/*", "../shared/types/**/*"]
+  "include": ["src/**/*", "src/types/**/*"]
 }

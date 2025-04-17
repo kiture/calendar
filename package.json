@@ -5,7 +5,7 @@
   "description": "## Project Description AI Group Calendar is a web application designed to facilitate coordination and synchronization of events within defined user groups. The application allows for creating, viewing, editing, and deleting group events. A key feature is the integration with artificial intelligence (AI) to provide users with suggestions for interesting events in their area based on defined criteria.",
   "scripts": {
     "lint": "eslint .",
-    "prettier": "prettier --write ."
+    "prettier": "npx prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -15,6 +15,10 @@
   "license": "ISC",
   "homepage": "https://github.com/kiture/calendar#readme",
   "dependencies": {
+    
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.11",
     "@eslint/js": "^9.21.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.1",
@@ -22,8 +26,5 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "typescript-eslint": "^8.24.1"
-  },
-  "devDependencies": {
-    "@types/pg": "^8.11.11"
   }
 }

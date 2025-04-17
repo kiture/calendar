@@ -10,10 +10,10 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "@shared/types": ["../shared/types"],
-      "@shared/types/*": ["../shared/types/*"]
+      "@shared/types": ["../frontend/src/types"],
+      "@shared/types/*": ["../frontend/src/types/*"]
     }
   },
-  "include": ["src/**/*.ts", "../shared/types/db.types.ts"],
+  "include": ["src/**/*.ts", "../frontend/src/types/db.types.ts"],
   "exclude": ["node_modules"]
 }

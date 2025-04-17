@@ -38,10 +38,17 @@ export const query = async (
   try {
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    console.log('Executed query', { text: text.substring(0, 100) + (text.length > 100 ? '...' : ''), duration: `${duration}ms`, rows: res.rowCount });
+    console.log('Executed query', {
+      text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+      duration: `${duration}ms`,
+      rows: res.rowCount,
+    });
     return res;
   } catch (error) {
-    console.error('Error executing query', { text: text.substring(0, 100) + (text.length > 100 ? '...' : ''), error });
+    console.error('Error executing query', {
+      text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+      error,
+    });
     throw error;
   }
 };

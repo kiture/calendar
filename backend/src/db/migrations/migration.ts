@@ -25,7 +25,9 @@ async function createDatabaseIfNotExists() {
     await defaultClient.connect();
     console.log('Connected to the default database.');
 
-    const res = await defaultClient.query("SELECT 1 FROM pg_database WHERE datname = 'calendar'");
+    const res = await defaultClient.query(
+      "SELECT 1 FROM pg_database WHERE datname = 'calendar'"
+    );
     if (res.rowCount === 0) {
       await defaultClient.query('CREATE DATABASE calendar');
       console.log('Database "calendar" created.');
@@ -59,7 +61,6 @@ async function runMigration(migrationFileName: string): Promise<void> {
 
     await client.query(sql);
     console.log('Migration executed successfully.');
-
   } catch (err) {
     console.error('Error executing migration:', err);
   } finally {
@@ -70,7 +71,7 @@ async function runMigration(migrationFileName: string): Promise<void> {
 
 // Execute the database creation and migration
 (async () => {
-    await createDatabaseIfNotExists();
-    await runMigration('20231124123000_create_functions_schema.sql'); 
-    await runMigration('20231124123000_create_initial_schema.sql'); 
+  await createDatabaseIfNotExists();
+  await runMigration('20231124123000_create_functions_schema.sql');
+  await runMigration('20231124123000_create_initial_schema.sql');
 })();

@@ -1,30 +1,17 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AppState } from '../../model/AppState';
-import { getConfig } from '../../service/config.service';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { initialState, AppStatus } from './app.model';
+import { loadAppConfig } from '../../service/config.service';
 
-const initialState: AppState = {
-  appTitle: 'Events Calendar',
-  user: null,
-  status: null,
-};
-
-export const fetchUser = createAsyncThunk(
-  'app/fetchUser',
-  async ({ name, password }: { name: string; password: string }) => {
-    const config = getConfig();
-    const response = await fetch(`${config.apiUrl}/api/user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, password }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user');
+export const initializeApp = createAsyncThunk(
+  'app/initializeApp',
+  async (_, { rejectWithValue }) => {
+    try {
+      await loadAppConfig();
+      return true;
+    } catch (error) {
+      console.error('Application initialization failed:', error);
+      return rejectWithValue('Initialization failed');
     }
-
-    return response.json();
   }
 );
 
@@ -32,27 +19,45 @@ export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setAppStatus: (state, action: PayloadAction<AppStatus>) => {
+      state.status = action.payload;
+    },
+    setAppIdle: (state) => {
+      state.status = { type: 'idle' };
+    },
+    setAppLoading: (state, action: PayloadAction<string>) => {
+      state.status = { type: 'loading', info: action.payload };
+    },
+    setAppError: (state, action: PayloadAction<string>) => {
+      state.status = { type: 'error', error: action.payload };
+    },
+    setAppInitializing: (state) => {
+      state.status = { type: 'initializing' };
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.status = null;
+      .addCase(initializeApp.pending, (state) => {
+        state.status = { type: 'initializing' };
       })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.user = null;
-        state.status = { error: action.error.message || 'Unknown error' };
+      .addCase(initializeApp.fulfilled, (state) => {
+        state.status = { type: 'idle' };
       })
-      .addCase(fetchUser.pending, (state) => {
-        state.user = null;
-        state.status = { loading: true };
+      .addCase(initializeApp.rejected, (state, action) => {
+        state.status = {
+          type: 'error',
+          error: (action.payload as string) || 'Initialization failed',
+        };
       });
   },
 });
 
-export const { setUser } = appSlice.actions;
+export const {
+  setAppStatus,
+  setAppIdle,
+  setAppLoading,
+  setAppError,
+  setAppInitializing,
+} = appSlice.actions;
 
 export default appSlice.reducer;
