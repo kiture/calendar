@@ -15,8 +15,10 @@ export function MyEventsView() {
   const navigate = useNavigate();
 
   // Asserting the type here, ensure selector returns EventDto[] or undefined/null
-  const userEvents = useSelector(selectCurrentUserEvents) as EventDto[] | undefined;
-  
+  const userEvents = useSelector(selectCurrentUserEvents) as
+    | EventDto[]
+    | undefined;
+
   const handleLeave = async (eventId: string) => dispatch(leaveEvent(eventId));
 
   const handleEdit = (eventId: string) => {
@@ -24,8 +26,12 @@ export function MyEventsView() {
   };
 
   const handleDelete = async (eventId: string, eventTitle: string) => {
-    if (window.confirm(`Are you sure you want to DELETE the event "${eventTitle}"? This cannot be undone.`)) {
-        dispatch(deleteEvent(eventId));
+    if (
+      window.confirm(
+        `Are you sure you want to DELETE the event "${eventTitle}"? This cannot be undone.`
+      )
+    ) {
+      dispatch(deleteEvent(eventId));
     }
   };
 
@@ -36,9 +42,15 @@ export function MyEventsView() {
       {Array.isArray(userEvents) && userEvents.length > 0 ? (
         <ul className="space-y-4">
           {userEvents.map((event: EventDto) => (
-            <li key={event.event_id} className="p-4 border rounded-lg shadow-sm bg-white flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
+            <li
+              key={event.event_id}
+              className="p-4 border rounded-lg shadow-sm bg-white flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0"
+            >
               <div className="flex-grow mr-4">
-                <Link to={`/event/${event.event_id}`} className="text-lg font-semibold text-blue-600 hover:underline break-words">
+                <Link
+                  to={`/event/${event.event_id}`}
+                  className="text-lg font-semibold text-blue-600 hover:underline break-words"
+                >
                   {event.title}
                 </Link>
                 <p className="text-sm text-gray-600 mt-1">
@@ -46,17 +58,26 @@ export function MyEventsView() {
                 </p>
               </div>
               <div className="flex space-x-2 flex-shrink-0">
-                 {/* Changed variant to secondary, removed size */}
-                <Button onClick={() => handleLeave(event.event_id)} variant="secondary">
+                {/* Changed variant to secondary, removed size */}
+                <Button
+                  onClick={() => handleLeave(event.event_id)}
+                  variant="secondary"
+                >
                   Leave
                 </Button>
                 {/* Note: Consider adding owner check before showing Edit/Delete */}
-                 {/* Removed size */}
-                <Button onClick={() => handleEdit(event.event_id)} variant="secondary">
+                {/* Removed size */}
+                <Button
+                  onClick={() => handleEdit(event.event_id)}
+                  variant="secondary"
+                >
                   Edit
                 </Button>
-                 {/* Removed size */}
-                <Button onClick={() => handleDelete(event.event_id, event.title)} variant="danger">
+                {/* Removed size */}
+                <Button
+                  onClick={() => handleDelete(event.event_id, event.title)}
+                  variant="danger"
+                >
                   Delete
                 </Button>
               </div>
@@ -64,8 +85,10 @@ export function MyEventsView() {
           ))}
         </ul>
       ) : (
-        <p className="text-gray-500 text-center">You are not currently participating in any events.</p>
+        <p className="text-gray-500 text-center">
+          You are not currently participating in any events.
+        </p>
       )}
     </div>
   );
-} 
+}

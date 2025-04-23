@@ -1,12 +1,15 @@
 # OpenRouter Service Implementation Plan
 
 ## 1. Opis usługi
+
 Serwis `OpenRouterService` jest odpowiedzialny za komunikację z API OpenRouter w celu generowania odpowiedzi na podstawie rozmów LLM. Umożliwia przesyłanie wiadomości systemowych i użytkownika, otrzymywanie ustrukturyzowanych odpowiedzi w formacie JSON, wybór modelu oraz konfigurację parametrów modelu.
 
 ## 2. Opis konstruktora
+
 ```ts
 constructor(config: OpenRouterConfig)
 ```
+
 - **Parametry**:
   1. `apiKey: string` – klucz API do OpenRouter (przechowywany w zmiennych środowiskowych).
   2. `baseUrl?: string` – podstawowy adres endpointu OpenRouter (domyślnie `https://api.openrouter.ai`).
@@ -15,21 +18,34 @@ constructor(config: OpenRouterConfig)
 - **Valdiacja**: Rzuca `InvalidConfigurationError` jeśli `apiKey` jest pusty lub ma nieprawidłowy format.
 
 ## 3. Publiczne metody i pola
+
 1. **`sendMessage(messages: ChatMessage[], options?: RequestOptions): Promise<ChatResponse>`**
-   - *Opis:* Główna metoda wysyłająca `messages` (tablica obiektów `{ role: 'system'|'user', content: string }`) do OpenRouter.
-   - *Parametry:* 
+   - _Opis:_ Główna metoda wysyłająca `messages` (tablica obiektów `{ role: 'system'|'user', content: string }`) do OpenRouter.
+   - _Parametry:_
      - `messages` – sekwencja wiadomości systemowych i użytkownika.
      - `options.modelName?` – nadpisuje `defaultModel`.
      - `options.modelParams?` – nadpisuje `defaultParams`.
      - `options.responseFormat?` – np.:
        ```json
-       { type: 'json_schema', json_schema: { name: 'MySchema', strict: true, schema: { type: 'object', properties: { answer: { type: 'string' } }, required: ['answer'] }}}
+       {
+         "type": "json_schema",
+         "json_schema": {
+           "name": "MySchema",
+           "strict": true,
+           "schema": {
+             "type": "object",
+             "properties": { "answer": { "type": "string" } },
+             "required": ["answer"]
+           }
+         }
+       }
        ```
-   - *Zwraca:* Obiekt `ChatResponse` zawierający parsowane pola zgodne z zadanym `responseFormat`.
+   - _Zwraca:_ Obiekt `ChatResponse` zawierający parsowane pola zgodne z zadanym `responseFormat`.
 2. **`getSupportedModels(): Promise<string[]>`**
-   - *Opis:* Pobiera listę dostępnych modeli z OpenRouter.
+   - _Opis:_ Pobiera listę dostępnych modeli z OpenRouter.
 
 ## 4. Prywatne metody i pola
+
 - **Pola prywatne**:
   - `_apiKey: string`
   - `_baseUrl: string`
@@ -42,23 +58,25 @@ constructor(config: OpenRouterConfig)
   4. `_logRequest(payload, response): void` – opcjonalnie logowanie dla audytu (implementowane jako middleware).
 
 ## 5. Obsługa błędów
+
 1. **Błąd sieciowy (np. brak połączenia)**
-   - *Scenariusz:* Brak dostępu do internetu lub timeout.
-   - *Rozwiązanie:* Rzucić `NetworkError`, retry z backoff.
+   - _Scenariusz:_ Brak dostępu do internetu lub timeout.
+   - _Rozwiązanie:_ Rzucić `NetworkError`, retry z backoff.
 2. **Błąd autoryzacji (401/403)**
-   - *Scenariusz:* Nieprawidłowy lub wygasły klucz API.
-   - *Rozwiązanie:* Rzucić `AuthenticationError`, zatrzymać dalsze próby.
+   - _Scenariusz:_ Nieprawidłowy lub wygasły klucz API.
+   - _Rozwiązanie:_ Rzucić `AuthenticationError`, zatrzymać dalsze próby.
 3. **Przekroczenie limitu (429)**
-   - *Scenariusz:* Zbyt wiele żądań.
-   - *Rozwiązanie:* Rzucić `RateLimitError`, retry po zadanym `Retry-After`.
+   - _Scenariusz:_ Zbyt wiele żądań.
+   - _Rozwiązanie:_ Rzucić `RateLimitError`, retry po zadanym `Retry-After`.
 4. **Błąd formatu odpowiedzi**
-   - *Scenariusz:* Odpowiedź nie spełnia `response_format`.
-   - *Rozwiązanie:* Rzucić `ResponseFormatError` z detalami schematu.
+   - _Scenariusz:_ Odpowiedź nie spełnia `response_format`.
+   - _Rozwiązanie:_ Rzucić `ResponseFormatError` z detalami schematu.
 5. **Błąd wewnętrzny serwera (5xx)**
-   - *Scenariusz:* Problemy po stronie OpenRouter.
-   - *Rozwiązanie:* Rzucić `ServerError`, opcjonalny retry po krótkiej przerwie.
+   - _Scenariusz:_ Problemy po stronie OpenRouter.
+   - _Rozwiązanie:_ Rzucić `ServerError`, opcjonalny retry po krótkiej przerwie.
 
 ## 6. Kwestie bezpieczeństwa
+
 - **Przechowywanie klucza API:** Używać `.env` i `dotenv`, nigdy nie commitować.
 - **Nagłówki HTTP:** Wymusić `Content-Type: application/json`, walidacja CORS.
 - **Rate limiting:** Środki ochronne na poziomie serwera (np. express-rate-limit).
@@ -66,6 +84,7 @@ constructor(config: OpenRouterConfig)
 - **Middleware:** Użyć `helmet` i `express-async-errors`.
 
 ## 7. Plan wdrożenia krok po kroku
+
 1. **Instalacja zależności**
    ```bash
    npm install openrouter axios zod express-async-errors
@@ -92,15 +111,28 @@ constructor(config: OpenRouterConfig)
    - Monitorować metryki (logi, czas odpowiedzi, błędy) za pomocą narzędzia APM.
 
 ---
-*Przykłady konfiguracji payloadu:*
+
+_Przykłady konfiguracji payloadu:_
+
 ```json
 {
   "messages": [
     { "role": "system", "content": "You are a helpful assistant." },
-    { "role": "user",   "content": "Podsumuj poniższy tekst." }
+    { "role": "user", "content": "Podsumuj poniższy tekst." }
   ],
   "model": "gpt-4o-mini",
   "parameters": { "temperature": 0.7, "max_tokens": 500 },
-  "response_format": { "type": "json_schema", "json_schema": { "name": "SummarySchema", "strict": true, "schema": { "type": "object", "properties": { "summary": { "type": "string" } }, "required": ["summary"] } } }
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "SummarySchema",
+      "strict": true,
+      "schema": {
+        "type": "object",
+        "properties": { "summary": { "type": "string" } },
+        "required": ["summary"]
+      }
+    }
+  }
 }
-``` 
+```

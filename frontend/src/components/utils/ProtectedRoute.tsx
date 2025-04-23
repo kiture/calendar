@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { selectIsLoggedIn } from '../../redux/user/user.selectors';
 
-
 export function ProtectedRoute() {
   // Check authentication status using the selector
   const isAuthenticated = useSelector(selectIsLoggedIn);
@@ -15,4 +14,4 @@ export function ProtectedRoute() {
 
   // User is authenticated, render the nested routes via Outlet.
   return <Outlet />;
-} 
+}

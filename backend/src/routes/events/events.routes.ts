@@ -61,8 +61,14 @@ const eventController = {
   ): Promise<void> => {
     const { eventId } = req.params;
     // Extract only allowed fields for update
-    const { title, start_time, end_time, place, description, is_ai_suggestion } =
-      req.body;
+    const {
+      title,
+      start_time,
+      end_time,
+      place,
+      description,
+      is_ai_suggestion,
+    } = req.body;
 
     if (!req.user) return next(new Error('Authentication required'));
     const userId = req.user.userId;

@@ -144,7 +144,7 @@ export const listEventsInGroup = createAsyncThunk<
 // Thunk to fetch events the current user is associated with (attending, created, etc.)
 export const fetchCurrentUserEvents = createAsyncThunk<
   EventDto[], // Return type: an array of EventDto
-  void,       // Argument type: no arguments needed
+  void, // Argument type: no arguments needed
   AsyncThunkConfig
 >('event/fetchCurrentUserEvents', async (_, thunkAPI) => {
   return makeApiRequest<EventDto[]>('/api/users/me/events', 'GET', thunkAPI, {

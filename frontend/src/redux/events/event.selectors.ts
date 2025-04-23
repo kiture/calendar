@@ -34,13 +34,17 @@ export const selectEvents = createSelector(
 export const selectCurrentUserEvents = createSelector(
   [selectEvents, selectCurrentUser, selectEventAttendees],
   (events, currentUser, attendees) => {
-    return events.filter((event) => attendees[event.event_id]?.some((attendee) => attendee.user_id === currentUser?.user_id));
+    return events.filter((event) =>
+      attendees[event.event_id]?.some(
+        (attendee) => attendee.user_id === currentUser?.user_id
+      )
+    );
   }
 );
 
 export const selectEventById = (eventId: string | number) =>
   createSelector([selectEvents], (events) => {
-    return events.find((event) => String(event.event_id) === String(eventId)); 
+    return events.find((event) => String(event.event_id) === String(eventId));
   });
 
 // Select the list of events in a specific group
@@ -51,10 +55,13 @@ export const selectEventsInGroup = (groupId: string) =>
 
 export const selectEventsForActiveGroup = createSelector(
   [selectEventSlice, selectSelectedGroupId],
-  (eventsState, selectedGroupId) => eventsState.events.filter((event) => event.group_id === selectedGroupId)
+  (eventsState, selectedGroupId) =>
+    eventsState.events.filter((event) => event.group_id === selectedGroupId)
 );
 
 export const selectUserIsAttendingEvent = (eventId: string) =>
-  createSelector([selectCurrentUser, selectEventAttendeesByEventId(eventId)], (currentUser, attendees) =>
-    attendees?.some((attendee) => attendee.user_id === currentUser?.user_id)
+  createSelector(
+    [selectCurrentUser, selectEventAttendeesByEventId(eventId)],
+    (currentUser, attendees) =>
+      attendees?.some((attendee) => attendee.user_id === currentUser?.user_id)
   );

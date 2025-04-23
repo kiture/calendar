@@ -25,7 +25,8 @@ export const selectRoles = createSelector(
 
 export const selectUserRole = createSelector(
   [selectUserSlice, selectRoles],
-  (userState, roles) => roles.find((role) => role.role_id === userState.user?.role_id)
+  (userState, roles) =>
+    roles.find((role) => role.role_id === userState.user?.role_id)
 );
 
 export const selectUserIsAdmin = createSelector(

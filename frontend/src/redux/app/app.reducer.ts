@@ -2,8 +2,6 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { initialState, AppStatus } from './app.model';
 import { loadAppConfig } from '../../service/config.service';
 
-
-
 export const initializeApp = createAsyncThunk(
   'app/initializeApp',
   async (_, { dispatch, rejectWithValue }) => {

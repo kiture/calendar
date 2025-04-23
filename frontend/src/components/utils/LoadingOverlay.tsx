@@ -4,7 +4,7 @@ import { selectAppLoading } from '../../redux/app/app.selectors';
 
 export function LoadingOverlay() {
   const message = useSelector(selectAppLoading);
-  
+
   const [isVisible, setIsVisible] = useState(false);
   const [displayMessage, setDisplayMessage] = useState<string | null>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
@@ -21,7 +21,7 @@ export function LoadingOverlay() {
     } else {
       timeoutIdRef.current = setTimeout(() => {
         setIsVisible(false);
-      }, 1000); 
+      }, 1000);
     }
 
     return () => {
@@ -29,7 +29,7 @@ export function LoadingOverlay() {
         clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [message]); 
+  }, [message]);
 
   if (!isVisible) {
     return null;
@@ -37,8 +37,9 @@ export function LoadingOverlay() {
 
   return (
     // Use a background color with opacity
-    <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center transition-opacity duration-300 ease-in-out" 
-         style={{ opacity: isVisible ? 1 : 0 }} // Example using style for opacity transition
+    <div
+      className="fixed inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center transition-opacity duration-300 ease-in-out"
+      style={{ opacity: isVisible ? 1 : 0 }} // Example using style for opacity transition
     >
       <div className="text-center p-4 rounded bg-base-100 shadow-xl">
         <span className="loading loading-spinner loading-lg text-primary mb-3"></span>
@@ -49,4 +50,4 @@ export function LoadingOverlay() {
       </div>
     </div>
   );
-} 
+}

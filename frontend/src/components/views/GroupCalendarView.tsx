@@ -2,16 +2,21 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, dateFnsLocalizer, Views, SlotInfo } from 'react-big-calendar';
+import {
+  Calendar,
+  dateFnsLocalizer,
+  Views,
+  SlotInfo,
+} from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { pl } from 'date-fns/locale/pl'; // Polish locale
 // Assuming this thunk exists
-import {selectEventsForActiveGroup } from '../../redux/events/event.selectors'; // Assuming these selectors exist
+import { selectEventsForActiveGroup } from '../../redux/events/event.selectors'; // Assuming these selectors exist
 import { EventDto } from '../../types/EventDto'; // Assuming EventDto type exists
 
 // Setup the localizer by providing the required functions
 const locales = {
-  'pl': pl,
+  pl: pl,
 };
 const localizer = dateFnsLocalizer({
   format,
@@ -35,15 +40,17 @@ export function GroupCalendarView() {
   const eventsFromStore = useSelector(selectEventsForActiveGroup);
 
   const calendarEvents: CalendarEvent[] = useMemo(() => {
-    return eventsFromStore.map((event: EventDto): CalendarEvent => ({
-      title: event.title,
-      // Use start_time for both start and end as end_time is not available
-      start: new Date(event.start_time),
-      end: new Date(event.end_time? event.end_time : event.start_time), 
-      // Set allDay to true for better visibility in month view, as no end_time is present
-      allDay: true, 
-      resource: event, 
-    }));
+    return eventsFromStore.map(
+      (event: EventDto): CalendarEvent => ({
+        title: event.title,
+        // Use start_time for both start and end as end_time is not available
+        start: new Date(event.start_time),
+        end: new Date(event.end_time ? event.end_time : event.start_time),
+        // Set allDay to true for better visibility in month view, as no end_time is present
+        allDay: true,
+        resource: event,
+      })
+    );
   }, [eventsFromStore]);
 
   const handleSelectEvent = (event: CalendarEvent) => {
@@ -54,10 +61,13 @@ export function GroupCalendarView() {
     } else {
       // Fallback check for 'id' just in case, then warn
       const fallbackId = event.resource?.event_id;
-      if(fallbackId) {
-         navigate(`/event/${fallbackId}`);
+      if (fallbackId) {
+        navigate(`/event/${fallbackId}`);
       } else {
-         console.warn('Could not navigate: event ID missing from resource', event.resource);
+        console.warn(
+          'Could not navigate: event ID missing from resource',
+          event.resource
+        );
       }
     }
   };
@@ -83,11 +93,13 @@ export function GroupCalendarView() {
           defaultView={Views.MONTH} // Set default view to month
           views={[Views.MONTH, Views.WEEK, Views.DAY]} // Allow switching views
           style={{ height: '100%' }}
-          culture='pl' // Set culture for labels/formats
-          messages={{
-             // Optional: Add Polish messages here if needed
-             // Example: allDay: 'Cały dzień', previous: 'Poprzedni', next: 'Następny', ...
-          }}
+          culture="pl" // Set culture for labels/formats
+          messages={
+            {
+              // Optional: Add Polish messages here if needed
+              // Example: allDay: 'Cały dzień', previous: 'Poprzedni', next: 'Następny', ...
+            }
+          }
           onSelectEvent={handleSelectEvent}
           onSelectSlot={handleSelectSlot} // Add the slot select handler
           selectable // Enable slot selection

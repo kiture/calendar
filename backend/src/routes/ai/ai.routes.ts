@@ -33,13 +33,20 @@ const eventSuggestionsSchema = {
           startTime: { type: 'string' },
           endTime: { type: 'string' },
           location: { type: 'string' },
-          type: { type: 'string' }
+          type: { type: 'string' },
         },
-        required: ['title', 'description', 'startTime', 'endTime', 'location', 'type']
-      }
-    }
+        required: [
+          'title',
+          'description',
+          'startTime',
+          'endTime',
+          'location',
+          'type',
+        ],
+      },
+    },
   },
-  required: ['suggestions']
+  required: ['suggestions'],
 };
 
 interface OpenRouterResponse {
@@ -85,7 +92,7 @@ const aiController = {
           All fields are required. Do not include any additional fields.
           Make the suggestions realistic and appropriate for the location and time frame.
           Ensure all times are within the specified start and end dates and use ISO8601 format.
-          For type, use general categories like: business, social, entertainment, sports, education, etc.`
+          For type, use general categories like: business, social, entertainment, sports, education, etc.`,
       };
 
       // Prepare the user message with query parameters
@@ -95,11 +102,11 @@ const aiController = {
           - Time frame: between ${startDate} and ${endDate}
           - Location: ${location}
           ${type ? `- Type of event: ${type}` : ''}
-          Please provide 3-5 varied suggestions that would be interesting and feasible.`
+          Please provide 3-5 varied suggestions that would be interesting and feasible.`,
       };
 
       // Call OpenRouter API with JSON schema validation
-      const response = await openRouter.sendMessage(
+      const response = (await openRouter.sendMessage(
         [systemMessage, userMessage],
         {
           responseFormat: {
@@ -107,11 +114,11 @@ const aiController = {
             json_schema: {
               name: 'EventSuggestionsSchema',
               strict: true,
-              schema: eventSuggestionsSchema
-            }
-          }
+              schema: eventSuggestionsSchema,
+            },
+          },
         }
-      ) as OpenRouterResponse;
+      )) as OpenRouterResponse;
 
       // Parse the response content
       const content = response.choices[0]?.message?.content;
@@ -121,7 +128,7 @@ const aiController = {
 
       // Parse the JSON content
       const parsedContent = JSON.parse(content);
-      
+
       // Return the suggestions array directly
       res.status(200).json(parsedContent.suggestions);
     } catch (error) {

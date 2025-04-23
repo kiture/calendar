@@ -46,8 +46,8 @@ export class OpenRouterService {
       const response = await fetch(`${this._baseUrl}/api/v1/chat/completions`, {
         method: 'POST',
         headers: {
-            Authorization: `Bearer ${this._apiKey}`,
-            'Content-Type': 'application/json',
+          Authorization: `Bearer ${this._apiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
@@ -70,5 +70,4 @@ export class OpenRouterService {
       response_format: options.responseFormat,
     };
   }
-
-} 
+}

@@ -4,8 +4,16 @@ import { format } from 'date-fns';
 import { pl } from 'date-fns/locale/pl';
 
 import { AppDispatch, RootState } from '../../redux/store';
-import { selectEventById, selectEventAttendeesByEventId, selectUserIsAttendingEvent } from '../../redux/events/event.selectors';
-import { joinEvent, leaveEvent, deleteEvent } from '../../redux/events/event.thunks';
+import {
+  selectEventById,
+  selectEventAttendeesByEventId,
+  selectUserIsAttendingEvent,
+} from '../../redux/events/event.selectors';
+import {
+  joinEvent,
+  leaveEvent,
+  deleteEvent,
+} from '../../redux/events/event.thunks';
 import { AttendeeDetailsDto } from '../../types/AttendeeDetailsDto';
 import { Button } from '../ui/Button';
 
@@ -42,14 +50,22 @@ export function EventDetailsView() {
   const handleDelete = async () => {
     if (!eventId) return;
 
-    if (window.confirm(`Are you sure you want to delete the event "${event?.title || 'this event'}"? This cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the event "${event?.title || 'this event'}"? This cannot be undone.`
+      )
+    ) {
       await dispatch(deleteEvent(eventId)).unwrap();
-      navigate('/');      
+      navigate('/');
     }
   };
 
   if (!eventId) {
-     return <div className="text-center p-4 text-red-600">Error: Event ID missing.</div>;
+    return (
+      <div className="text-center p-4 text-red-600">
+        Error: Event ID missing.
+      </div>
+    );
   }
 
   if (!event) {
@@ -59,14 +75,16 @@ export function EventDetailsView() {
   return (
     <div className="p-6 bg-white rounded shadow-md">
       <div className="flex justify-between items-start mb-2">
-        <h1 className="text-2xl md:text-3xl font-bold break-words mr-4">{event.title}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold break-words mr-4">
+          {event.title}
+        </h1>
         <div className="flex space-x-2 flex-shrink-0">
-            <Button onClick={handleEdit} variant="secondary">
-              Edit
-            </Button>
-            <Button onClick={handleDelete} variant="danger">
-              Delete
-            </Button>
+          <Button onClick={handleEdit} variant="secondary">
+            Edit
+          </Button>
+          <Button onClick={handleDelete} variant="danger">
+            Delete
+          </Button>
         </div>
       </div>
 
@@ -80,8 +98,7 @@ export function EventDetailsView() {
           {format(new Date(event.end_time), 'PPPPpppp', { locale: pl })}
         </div>
         <div>
-          <strong>Location:</strong>{' '}
-          {event.place || 'Not specified'}
+          <strong>Location:</strong> {event.place || 'Not specified'}
         </div>
       </div>
 
@@ -99,7 +116,9 @@ export function EventDetailsView() {
 
       {event.description && (
         <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-2 text-gray-800">Description</h3>
+          <h3 className="text-xl font-semibold mb-2 text-gray-800">
+            Description
+          </h3>
           <p className="text-gray-700 whitespace-pre-wrap bg-gray-50 p-4 rounded border border-gray-200">
             {event.description}
           </p>
@@ -107,21 +126,22 @@ export function EventDetailsView() {
       )}
 
       <div className="mt-8 border-t pt-6">
-          <h3 className="text-xl font-semibold mb-3 text-gray-800">Attendees</h3>
-          {attendees && attendees.length > 0 && (
-              <ul className="list-disc pl-5 space-y-1">
-                  {attendees.map((attendee: AttendeeDetailsDto) => (
-                      <li key={attendee.user_id} className="text-gray-700">
-                          {attendee.first_name || attendee.last_name || `User ID: ${attendee.user_id}`}
-                      </li>
-                  ))}
-              </ul>
-          )}
-          {(!attendees || attendees.length === 0) && (
-              <p className="text-gray-500">No attendees information available.</p>
-          )}
+        <h3 className="text-xl font-semibold mb-3 text-gray-800">Attendees</h3>
+        {attendees && attendees.length > 0 && (
+          <ul className="list-disc pl-5 space-y-1">
+            {attendees.map((attendee: AttendeeDetailsDto) => (
+              <li key={attendee.user_id} className="text-gray-700">
+                {attendee.first_name ||
+                  attendee.last_name ||
+                  `User ID: ${attendee.user_id}`}
+              </li>
+            ))}
+          </ul>
+        )}
+        {(!attendees || attendees.length === 0) && (
+          <p className="text-gray-500">No attendees information available.</p>
+        )}
       </div>
-
     </div>
   );
-} 
+}

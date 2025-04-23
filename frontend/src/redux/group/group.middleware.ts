@@ -1,6 +1,10 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '../store'; // Import RootState type if needed for effects
-import { fetchUserGroups, fetchAllGroups, fetchGroupMembers } from './group.thunks';
+import {
+  fetchUserGroups,
+  fetchAllGroups,
+  fetchGroupMembers,
+} from './group.thunks';
 import { fetchAllRoles, loginUser } from '../user/user.thunks';
 import { selectIsLoggedIn, selectUserIsAdmin } from '../user/user.selectors';
 import { selectUserGroups } from './group.selectors';
@@ -23,7 +27,7 @@ groupListenerMiddleware.startListening({
     // You can now conditionally run logic based on the selector result
     if (isLoggedIn) {
       const dispatch = listenerApi.dispatch as AppDispatch;
-      dispatch(fetchUserGroups()); 
+      dispatch(fetchUserGroups());
     }
   },
 });

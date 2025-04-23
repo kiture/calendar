@@ -23,7 +23,7 @@ userListenerMiddleware.startListening({
       // Explicitly type the dispatch from listenerApi
       const dispatch = listenerApi.dispatch as AppDispatch;
       // Dispatch fetchAllRoles thunk using the typed dispatch
-      dispatch(fetchAllRoles()); 
+      dispatch(fetchAllRoles());
       // Add any other post-login actions here...
     }
   },

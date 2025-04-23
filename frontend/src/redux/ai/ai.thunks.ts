@@ -4,7 +4,6 @@ import { AISuggestionDto } from '../../types/AISuggestionDto';
 import { AppDispatch } from '../store';
 import { RootState } from '../store';
 
-
 type AsyncThunkConfig = {
   state: RootState;
   dispatch: AppDispatch;

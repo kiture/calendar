@@ -13,7 +13,7 @@ export const appListenerMiddleware = createListenerMiddleware();
 // Listener for successful user login
 appListenerMiddleware.startListening({
   matcher: isAnyOf(loginUser.fulfilled),
-  effect: async (action, listenerApi) => {
+  effect: async (_, listenerApi) => {
     // Get the state *after* the login action was processed
     const state = listenerApi.getState() as RootState;
 
@@ -22,7 +22,7 @@ appListenerMiddleware.startListening({
 
     // You can now conditionally run logic based on the selector result
     if (isLoggedIn) {
-      
+      console.log('Login successful (listenerMiddleware)');
     }
   },
 });
@@ -32,4 +32,4 @@ appListenerMiddleware.startListening({
 // appListenerMiddleware.startListening({
 //   actionCreator: someOtherAction,
 //   effect: async (action, listenerApi) => { ... }
-// }); 
+// });
