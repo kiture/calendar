@@ -92,7 +92,6 @@ export const listAttendees = createAsyncThunk<
   string, // Argument type (eventId)
   AsyncThunkConfig
 >('event/listAttendees', async (eventId, thunkAPI) => {
-  // Note: Backend removed pagination, so fetch helper gets all
   return makeApiRequest<AttendeeDetailsDto[]>(
     `/api/events/${eventId}/attendees`,
     'GET',
@@ -140,4 +139,15 @@ export const listEventsInGroup = createAsyncThunk<
     thunkAPI,
     { loadingMessage: `Loading events for group ${groupId}...` }
   );
+});
+
+// Thunk to fetch events the current user is associated with (attending, created, etc.)
+export const fetchCurrentUserEvents = createAsyncThunk<
+  EventDto[], // Return type: an array of EventDto
+  void,       // Argument type: no arguments needed
+  AsyncThunkConfig
+>('event/fetchCurrentUserEvents', async (_, thunkAPI) => {
+  return makeApiRequest<EventDto[]>('/api/users/me/events', 'GET', thunkAPI, {
+    loadingMessage: 'Loading your events...',
+  });
 });

@@ -90,8 +90,7 @@ export const eventSlice = createSlice({
             state.attendees[action.payload.event_id] = [
               ...state.attendees[action.payload.event_id].filter(
                 (attendee) => attendee.user_id !== action.payload.user_id
-              ),
-              action.payload,
+              )
             ];
           }
         }
@@ -109,7 +108,6 @@ export const eventSlice = createSlice({
       .addCase(
         listEventsInGroup.fulfilled,
         (state, action: PayloadAction<EventDto[]>) => {
-          console.log(action.payload);
           state.events = [
             ...state.events.filter(
               (event) =>

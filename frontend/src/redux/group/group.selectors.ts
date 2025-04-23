@@ -25,6 +25,11 @@ export const selectUserGroups = createSelector(
 
 export const selectSelectedGroup = createSelector(
   [selectGroupSlice],
-  (groupState) =>
-    groupState.groups.find((group) => group.id === groupState.selectedGroupId)
+  (groupState) => 
+    groupState.userGroups.find((group) => group.group_id === groupState.selectedGroupId)
+);
+
+export const selectSelectedGroupName = createSelector(
+  [selectSelectedGroup],
+  (group) => group?.group_name
 );

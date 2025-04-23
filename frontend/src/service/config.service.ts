@@ -23,7 +23,6 @@ export const loadAppConfig = async (): Promise<void> => {
     }
     const config = await response.json();
     appConfig = config;
-    console.log('Application configuration loaded successfully:', appConfig);
   } catch (error) {
     console.error(
       'Failed to load application configuration from /config.json:',

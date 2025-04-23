@@ -2,6 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState, AppDispatch } from '../store'; // Import store types
 import { makeApiRequest } from '../../utils/fetch-helper';
 import { ListGroupsResponseDto } from '../../types/ListGroupsResponseDto';
+import { GroupDto } from '../../types/GroupDto';
+import { ListGroupMembersResponseDto } from '../../types/ListGroupMembersResponseDto';
 
 // Define a type for the thunk API config using RootState and AppDispatch
 type AsyncThunkConfig = {
@@ -12,7 +14,7 @@ type AsyncThunkConfig = {
 };
 
 export const fetchUserGroups = createAsyncThunk<
-  ListGroupsResponseDto,
+  GroupDto[],
   void,
   AsyncThunkConfig
 >('group/fetchUserGroups', async (_, thunkAPI) => {
@@ -25,7 +27,7 @@ export const fetchUserGroups = createAsyncThunk<
 });
 
 export const fetchAllGroups = createAsyncThunk<
-  ListGroupsResponseDto,
+  GroupDto[],
   void,
   AsyncThunkConfig
 >('group/fetchAllGroups', async (_, thunkAPI) => {

@@ -24,19 +24,9 @@ export const selectAppError = createSelector(
   }
 );
 
-export const selectAppInfo = createSelector(
-  [selectAppSlice],
-  (appState): string | null => {
-    if (appState.status?.type === 'loading') {
-      return appState.status.info;
-    }
-    return null;
-  }
-);
-
 export const selectAppLoading = createSelector(
   [selectAppSlice],
-  (appState): boolean => {
-    return appState.status?.type === 'loading';
+  (appState): string | null => {
+    return appState.status?.type === 'loading' ? appState.status.info : null;
   }
 );

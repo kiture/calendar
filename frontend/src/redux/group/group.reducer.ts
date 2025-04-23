@@ -19,11 +19,11 @@ const groupSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserGroups.fulfilled, (state, action) => {
-        state.userGroups = action.payload.groups;
-        state.selectedGroupId = action.payload.groups[0]?.id;
+        state.userGroups = action.payload;
+        state.selectedGroupId = action.payload[0]?.group_id;
       })
       .addCase(fetchAllGroups.fulfilled, (state, action) => {
-        state.groups = action.payload.groups;
+        state.groups = action.payload;
       })
       .addCase(createGroup.fulfilled, (state, action) => {
         state.groups.push(action.payload);
