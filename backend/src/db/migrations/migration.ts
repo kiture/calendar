@@ -25,15 +25,13 @@ async function createDatabaseIfNotExists() {
     await defaultClient.connect();
     console.log('Connected to the default database.');
 
-    const res = await defaultClient.query(
-      "SELECT 1 FROM pg_database WHERE datname = 'calendar'"
-    );
-    if (res.rowCount === 0) {
-      await defaultClient.query('CREATE DATABASE calendar');
-      console.log('Database "calendar" created.');
-    } else {
-      console.log('Database "calendar" already exists.');
-    }
+    // Drop existing database if it exists
+    await defaultClient.query('DROP DATABASE IF EXISTS calendar');
+    console.log('Database "calendar" dropped if it existed.');
+
+    // Create a fresh database
+    await defaultClient.query('CREATE DATABASE calendar');
+    console.log('Database "calendar" created.');
   } catch (err) {
     console.error('Error checking/creating database:', err);
   } finally {

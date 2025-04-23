@@ -433,7 +433,7 @@ The main resources identified for this API are:
 ### AI Suggestions Resource
 
 - **GET /ai/event-suggestions**
-  - **Description:** Fetches event suggestions from the external AI service based on user criteria. Backend handles communication with Google AI SDK.
+  - **Description:** Fetches event suggestions from the external AI service based on user criteria. Backend handles communication with OpenRouter API.
   - **Query Parameters:**
     - `startDate` (iso8601-date): Required start date for search range.
     - `endDate` (iso8601-date): Required end date for search range.
@@ -481,5 +481,5 @@ The main resources identified for this API are:
   - **Event Creation:** `creator_user_id` is automatically set to the authenticated user's ID. `is_ai_suggestion` flag handled based on input/endpoint used. Handled by `POST /groups/{groupId}/events`.
   - **Event Access/Modification:** RLS enforces that users can only interact (view, update, delete, attend) with events belonging to groups they are members of. The "any member can edit/delete" rule is directly implemented via the RLS policy on the `events` table for UPDATE/DELETE.
   - **Attendance:** `POST /events/{eventId}/attendance` and `DELETE /events/{eventId}/attendance` endpoints manage the `event_attendance` table records for the authenticated user. RLS ensures users only manage their own attendance within accessible events.
-  - **AI Suggestions:** `GET /ai/event-suggestions` encapsulates the logic of querying the Google AI SDK using provided parameters. `POST /groups/{groupId}/events` handles the creation of an event based on a chosen AI suggestion, setting the `is_ai_suggestion` flag.
+  - **AI Suggestions:** `GET /ai/event-suggestions` encapsulates the logic of querying the OpenRouter API using provided parameters. `POST /groups/{groupId}/events` handles the creation of an event based on a chosen AI suggestion, setting the `is_ai_suggestion` flag.
   - **Cascading Deletes:** Database `ON DELETE` actions handle cascading logic automatically when users or groups are deleted.

@@ -39,7 +39,7 @@ export function GroupCalendarView() {
       title: event.title,
       // Use start_time for both start and end as end_time is not available
       start: new Date(event.start_time),
-      end: new Date(event.start_time), 
+      end: new Date(event.end_time? event.end_time : event.start_time), 
       // Set allDay to true for better visibility in month view, as no end_time is present
       allDay: true, 
       resource: event, 

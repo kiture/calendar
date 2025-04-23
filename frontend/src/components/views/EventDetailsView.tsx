@@ -70,8 +70,19 @@ export function EventDetailsView() {
         </div>
       </div>
 
-      <div className="mb-4 text-base md:text-lg text-gray-600">
-        {format(new Date(event.start_time), 'PPPPpppp', { locale: pl })}
+      <div className="mb-4 text-base md:text-lg text-gray-600 space-y-1">
+        <div>
+          <strong>Start:</strong>{' '}
+          {format(new Date(event.start_time), 'PPPPpppp', { locale: pl })}
+        </div>
+        <div>
+          <strong>End:</strong>{' '}
+          {format(new Date(event.end_time), 'PPPPpppp', { locale: pl })}
+        </div>
+        <div>
+          <strong>Location:</strong>{' '}
+          {event.place || 'Not specified'}
+        </div>
       </div>
 
       <div className="mb-6">

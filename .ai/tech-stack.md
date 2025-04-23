@@ -23,9 +23,9 @@ Na podstawie decyzji projektowych, wybrany został następujący stos technologi
 
 ## Integracja AI
 
-- **Biblioteka/SDK:** `@google/generative-ai` (Oficjalne SDK Google dla Gemini API)
-  - _Uzasadnienie:_ Umożliwia bezpośrednią i ustrukturyzowaną komunikację z modelami językowymi Google Gemini w celu realizacji funkcji sugerowania wydarzeń. Zapewnia obsługę autentykacji i formatowania zapytań specyficznych dla API Google.
-    **Komunikacja:** Wykorzystanie biblioteki bedzie odbywac sie po stronie backendu, front bedzie robil odpytanie do backendu, ktory to wysle zapytanie poprzez SDK do AI.
+- **Biblioteka/SDK:** `openrouter` (Oficjalne SDK OpenRouter)
+  - _Uzasadnienie:_ Umożliwia integrację z wieloma modelami językowymi (np. GPT-4, Llama 2) poprzez zunifikowane API OpenRouter. Zapewnia elastyczne zarządzanie kluczami API, obsługę różnych endpointów oraz automatyczne dokonywanie failover między modelami.
+    **Komunikacja:** Biblioteka będzie wykorzystywana po stronie backendu. Frontend wysyła żądania do backendu, który następnie przekazuje je do OpenRouter API i zwraca odpowiedzi do frontendu.
 
 ---
 

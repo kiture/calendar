@@ -76,6 +76,7 @@ const groupController = {
     const {
       title,
       start_time,
+      end_time,
       place,
       description,
       is_ai_suggestion = false,
@@ -96,15 +97,16 @@ const groupController = {
 
       // RLS policy on INSERT into events will implicitly check group membership
       const insertQuery = `
-                INSERT INTO events (group_id, creator_user_id, title, start_time, place, description, is_ai_suggestion)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
-                RETURNING event_id, group_id, creator_user_id, title, start_time, place, description, is_ai_suggestion, created_at, updated_at
+                INSERT INTO events (group_id, creator_user_id, title, start_time, end_time, place, description, is_ai_suggestion)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                RETURNING event_id, group_id, creator_user_id, title, start_time, end_time, place, description, is_ai_suggestion, created_at, updated_at
             `;
       const values = [
         groupId,
         userId,
         title,
         start_time,
+        end_time,
         place,
         description,
         is_ai_suggestion,
@@ -173,7 +175,7 @@ const groupController = {
 
       // Base queries
       let eventsQuery = `
-                SELECT event_id, group_id, creator_user_id, title, start_time, place, description, is_ai_suggestion, created_at, updated_at
+                SELECT event_id, group_id, creator_user_id, title, start_time, end_time, place, description, is_ai_suggestion, created_at, updated_at
                 FROM events
                 WHERE group_id = $1
             `;
@@ -256,6 +258,9 @@ const validateCreateEvent = [
   body('start_time')
     .isISO8601()
     .withMessage('Valid start_time (ISO8601 format) is required'),
+  body('end_time')
+    .isISO8601()
+    .withMessage('Valid end_time (ISO8601 format) is required'),
   body('place').optional().isString(),
   body('description').optional().isString(),
   body('is_ai_suggestion').optional().isBoolean(),

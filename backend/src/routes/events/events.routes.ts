@@ -29,7 +29,7 @@ const eventController = {
       const setLocalUserCmd = `SET LOCAL "myapp.user_id" = ${client.escapeLiteral(userId)}`;
       await client.query(setLocalUserCmd);
 
-      const eventQuery = `SELECT event_id, group_id, creator_user_id, title, start_time, place, description, is_ai_suggestion, created_at, updated_at FROM events WHERE event_id = $1`;
+      const eventQuery = `SELECT event_id, group_id, creator_user_id, title, start_time, end_time, place, description, is_ai_suggestion, created_at, updated_at FROM events WHERE event_id = $1`;
       const result = await client.query(eventQuery, [eventId]);
 
       await client.query('COMMIT');
@@ -61,7 +61,7 @@ const eventController = {
   ): Promise<void> => {
     const { eventId } = req.params;
     // Extract only allowed fields for update
-    const { title, start_time, place, description, is_ai_suggestion } =
+    const { title, start_time, end_time, place, description, is_ai_suggestion } =
       req.body;
 
     if (!req.user) return next(new Error('Authentication required'));
@@ -78,6 +78,7 @@ const eventController = {
       const updates: Record<string, string | boolean | Date | null> = {};
       if (title !== undefined) updates.title = title;
       if (start_time !== undefined) updates.start_time = start_time;
+      if (end_time !== undefined) updates.end_time = end_time;
       if (place !== undefined) updates.place = place;
       if (description !== undefined) updates.description = description;
       if (is_ai_suggestion !== undefined)
@@ -105,7 +106,7 @@ const eventController = {
                 UPDATE events
                 SET ${setClauses}
                 WHERE event_id = $${fields.length + 1}
-                RETURNING event_id, group_id, creator_user_id, title, start_time, place, description, is_ai_suggestion, created_at, updated_at
+                RETURNING event_id, group_id, creator_user_id, title, start_time, end_time, place, description, is_ai_suggestion, created_at, updated_at
             `;
 
       const result = await client.query(updateQuery, [...values, eventId]);
@@ -407,6 +408,10 @@ const validateUpdateEvent = [
     .optional()
     .isISO8601()
     .withMessage('Valid start_time (ISO8601 format) is required'),
+  body('end_time')
+    .optional()
+    .isISO8601()
+    .withMessage('Valid end_time (ISO8601 format) is required'),
   body('place').optional({ nullable: true }).isString(), // Allow null
   body('description').optional({ nullable: true }).isString(), // Allow null
   body('is_ai_suggestion').optional().isBoolean(),

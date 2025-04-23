@@ -28,6 +28,7 @@ export interface Event {
   creator_user_id: string | null; // uuid
   title: string;
   start_time: Date;
+  end_time: Date;
   place: string | null;
   description: string | null;
   is_ai_suggestion: boolean;

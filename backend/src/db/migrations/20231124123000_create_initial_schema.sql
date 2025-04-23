@@ -51,6 +51,7 @@ create table events (
     creator_user_id uuid references users(user_id) on delete set null,
     title varchar(255) not null,
     start_time timestamptz not null,
+    end_time timestamptz not null,
     place varchar(255),
     description text,
     is_ai_suggestion boolean not null default false,
@@ -145,4 +146,23 @@ SELECT
 WHERE
     NOT EXISTS (
         SELECT 1 FROM users WHERE email = 'admin@admin.com'
-    ); 
+    );
+
+-- Insert default 'admin_group' group
+INSERT INTO groups (group_name)
+SELECT 'admin_group'
+WHERE NOT EXISTS (
+    SELECT 1 FROM groups WHERE group_name = 'admin_group'
+);
+
+-- Add default admin user to 'admin_group'
+INSERT INTO group_memberships (user_id, group_id)
+SELECT u.user_id, g.group_id
+FROM users u
+JOIN groups g ON g.group_name = 'admin_group'
+WHERE u.email = 'admin@admin.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM group_memberships gm
+    WHERE gm.user_id = u.user_id
+      AND gm.group_id = g.group_id
+  ); 
