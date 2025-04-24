@@ -15,8 +15,12 @@ import { AdminUserManagementView } from './components/views/AdminUserManagementV
 import { ProtectedRoute } from './components/utils/ProtectedRoute';
 import { EventDetailsView } from './components/views/EventDetailsView';
 import { EventFormView } from './components/views/EventFormView';
-import { LoadingOverlay } from './components/utils/LoadingOverlay';
-import { ErrorOverlay } from './components/utils/ErrorOverlay';
+import { LoadingOverlayView } from './components/views/LoadingOverlayView';
+import { ErrorOverlayView } from './components/views/ErrorOverlayView';
+import { GroupsManagementView } from './components/views/GroupsManagementView';
+import { GroupFormView } from './components/views/GroupFormView';
+import { RegisterView } from './components/views/RegisterView';
+
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const appStatus = useSelector(selectAppStatus);
@@ -42,14 +46,18 @@ function App() {
             <Route path="event/:eventId/edit" element={<EventFormView />} />
             <Route path="admin/users" element={<AdminUserManagementView />} />
             <Route path="admin/groups" element={<AdminGroupManagementView />} />
+            <Route path="groups" element={<GroupsManagementView />} />
+            <Route path="groups/create" element={<GroupFormView />} />
+            <Route path="groups/:groupId/edit" element={<GroupFormView />} />
           </Route>
         </Route>
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<LoginView />} />
+          <Route path="register" element={<RegisterView />} />
         </Route>
       </Routes>
-      <LoadingOverlay />
-      <ErrorOverlay />
+      <LoadingOverlayView />
+      <ErrorOverlayView />
     </>
   );
 }

@@ -18,7 +18,14 @@ export const getErrorMessage = async (
     }
     try {
       const errorData = await response.json();
-      return errorData?.message || `HTTP error! status: ${response.status}`;
+      let errorMessage =
+        errorData?.message || `HTTP error! status: ${response.status}`;
+      if (errorData?.errors) {
+        errorMessage = errorData.errors
+          .map((error: { msg: string }) => error.msg)
+          .join('\n');
+      }
+      return errorMessage;
     } catch {
       // Error parsing JSON body, or no body
       return `HTTP error! status: ${response.status}`;
@@ -58,10 +65,16 @@ export const makeApiRequest = async <TResponse>(
     data?: unknown; // Use unknown instead of any for body data
     loadingMessage: string;
     headers?: HeadersInit; // Allow overriding/extending headers
+    tokenRequired?: boolean;
   }
 ): Promise<TResponse | ReturnType<ThunkApi['rejectWithValue']>> => {
   const { getState, dispatch, rejectWithValue } = thunkAPI;
-  const { data, loadingMessage, headers: customHeaders } = options;
+  const {
+    data,
+    loadingMessage,
+    headers: customHeaders,
+    tokenRequired = true,
+  } = options;
 
   dispatch(setAppLoading(loadingMessage));
   const config = getConfig();
@@ -72,7 +85,7 @@ export const makeApiRequest = async <TResponse>(
 
   // Check for authorization token if it's required (modify if some endpoints are public)
   const authHeader = (headers as Record<string, string>)['Authorization'];
-  if (!authHeader) {
+  if (!authHeader && tokenRequired) {
     const errorMsg = 'Authentication token not found.';
     dispatch(setAppError(errorMsg));
     return rejectWithValue(errorMsg);

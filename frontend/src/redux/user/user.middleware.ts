@@ -17,9 +17,10 @@ userListenerMiddleware.startListening({
 
     // Use the selector to check the login status from the updated state
     const isLoggedIn = selectIsLoggedIn(state);
+    const isAdmin = selectUserIsAdmin(state);
 
     // You can now conditionally run logic based on the selector result
-    if (isLoggedIn) {
+    if (isLoggedIn && isAdmin) {
       // Explicitly type the dispatch from listenerApi
       const dispatch = listenerApi.dispatch as AppDispatch;
       // Dispatch fetchAllRoles thunk using the typed dispatch

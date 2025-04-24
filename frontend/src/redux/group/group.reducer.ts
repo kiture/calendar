@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GroupState } from './group.model';
-import { fetchUserGroups, fetchAllGroups, createGroup } from './group.thunks';
+import {
+  fetchUserGroups,
+  fetchAllGroups,
+  createGroup,
+  updateGroup,
+} from './group.thunks';
 
 const initialState: GroupState = {
   groups: [],
@@ -27,6 +32,15 @@ const groupSlice = createSlice({
       })
       .addCase(createGroup.fulfilled, (state, action) => {
         state.groups.push(action.payload);
+        state.userGroups.push(action.payload);
+      })
+      .addCase(updateGroup.fulfilled, (state, action) => {
+        state.groups = state.groups.map((group) =>
+          group.group_id === action.payload.group_id ? action.payload : group
+        );
+        state.userGroups = state.userGroups.map((group) =>
+          group.group_id === action.payload.group_id ? action.payload : group
+        );
       });
   },
 });

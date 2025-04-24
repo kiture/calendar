@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { selectAppLoading } from '../../redux/app/app.selectors';
 
-export function LoadingOverlay() {
+export function LoadingOverlayView() {
   const message = useSelector(selectAppLoading);
 
   const [isVisible, setIsVisible] = useState(false);
@@ -36,14 +36,12 @@ export function LoadingOverlay() {
   }
 
   return (
-    // Use a background color with opacity
     <div
       className="fixed inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center transition-opacity duration-300 ease-in-out"
-      style={{ opacity: isVisible ? 1 : 0 }} // Example using style for opacity transition
+      style={{ opacity: isVisible ? 1 : 0 }}
     >
       <div className="text-center p-4 rounded bg-base-100 shadow-xl">
         <span className="loading loading-spinner loading-lg text-primary mb-3"></span>
-        {/* Display the persisted message */}
         {displayMessage && displayMessage.trim() !== '' && (
           <p className="text-black mt-2 text-lg">{displayMessage}</p>
         )}

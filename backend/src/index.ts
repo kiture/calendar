@@ -5,13 +5,15 @@ import cors from 'cors';
 import groupsRoutes from './routes/groups/groups.routes';
 import eventsRoutes from './routes/events/events.routes';
 import aiRoutes from './routes/ai/ai.routes';
+import usersRoutes from './routes/users/users.routes';
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
-
+app.use('/api/users', usersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/events', eventsRoutes);

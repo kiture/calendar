@@ -32,7 +32,7 @@ export const fetchAllGroups = createAsyncThunk<
   AsyncThunkConfig
 >('group/fetchAllGroups', async (_, thunkAPI) => {
   return makeApiRequest<ListGroupsResponseDto>(
-    '/api/admin/groups', // URL path (admin endpoint)
+    '/api/groups', // URL path
     'GET', // Method
     thunkAPI, // Pass the thunk API object
     { loadingMessage: 'Loading all groups...' } // Options
@@ -46,7 +46,7 @@ export const createGroup = createAsyncThunk<
   AsyncThunkConfig // Thunk config
 >('group/createGroup', async (groupData, thunkAPI) => {
   return makeApiRequest<GroupDto>(
-    '/api/admin/groups', // URL path (admin endpoint)
+    '/api/groups', // URL path
     'POST', // Method
     thunkAPI, // Pass the thunk API object
     {
@@ -63,7 +63,7 @@ export const fetchGroupById = createAsyncThunk<
   AsyncThunkConfig
 >('group/fetchGroupById', async (groupId, thunkAPI) => {
   return makeApiRequest<GroupDto>(
-    `/api/admin/groups/${groupId}`, // URL path including groupId
+    `/api/groups/${groupId}`, // URL path including groupId
     'GET', // Method
     thunkAPI, // Pass the thunk API object
     { loadingMessage: `Loading group ${groupId}...` } // Options
@@ -77,7 +77,7 @@ export const updateGroup = createAsyncThunk<
   AsyncThunkConfig
 >('group/updateGroup', async ({ groupId, group_name }, thunkAPI) => {
   return makeApiRequest<GroupDto>(
-    `/api/admin/groups/${groupId}`, // URL path including groupId
+    `/api/groups/${groupId}`, // URL path including groupId
     'PUT', // Method
     thunkAPI, // Pass the thunk API object
     {
@@ -95,7 +95,7 @@ export const deleteGroup = createAsyncThunk<
 >('group/deleteGroup', async (groupId, thunkAPI) => {
   // makeApiRequest returns {} on 204, so we handle success specifically
   const result = await makeApiRequest<void>( // Expect void/empty from helper on 204
-    `/api/admin/groups/${groupId}`, // URL path including groupId
+    `/api/groups/${groupId}`, // URL path including groupId
     'DELETE', // Method
     thunkAPI, // Pass the thunk API object
     { loadingMessage: `Deleting group ${groupId}...` } // Options
@@ -115,12 +115,12 @@ export const deleteGroup = createAsyncThunk<
 
 // Thunk to add a member to a group
 export const addGroupMember = createAsyncThunk<
-  GroupMembershipDto, // Success return type (the new membership record)
+  { groupId: string; userId: string }, // Success return type (the new membership record)
   { groupId: string; userId: string }, // Argument type
   AsyncThunkConfig
 >('group/addMember', async ({ groupId, userId }, thunkAPI) => {
-  return makeApiRequest<GroupMembershipDto>(
-    `/api/admin/groups/${groupId}/members`, // Dynamic URL path
+  await makeApiRequest<void>(
+    `/api/groups/${groupId}/members`, // Dynamic URL path
     'POST', // Method
     thunkAPI, // Pass the thunk API object
     {
@@ -128,6 +128,7 @@ export const addGroupMember = createAsyncThunk<
       loadingMessage: `Adding member to group ${groupId}...`,
     } // Options
   );
+  return { groupId, userId };
 });
 
 // Thunk to remove a member from a group
@@ -137,8 +138,8 @@ export const removeGroupMember = createAsyncThunk<
   AsyncThunkConfig
 >('group/removeMember', async ({ groupId, userId }, thunkAPI) => {
   // makeApiRequest returns {} on 204, so we handle success specifically
-  const result = await makeApiRequest<void>( // Expect void/empty from helper on 204
-    `/api/admin/groups/${groupId}/members/${userId}`, // Dynamic URL path
+  await makeApiRequest<void>( // Expect void/empty from helper on 204
+    `/api/groups/${groupId}/members/${userId}`, // Dynamic URL path
     'DELETE', // Method
     thunkAPI, // Pass the thunk API object
     { loadingMessage: `Removing member ${userId} from group ${groupId}...` } // Options
@@ -160,7 +161,7 @@ export const fetchGroupMembers = createAsyncThunk<
   AsyncThunkConfig
 >('group/fetchMembers', async (groupId, thunkAPI) => {
   return makeApiRequest<ListGroupMembersResponseDto>(
-    `/api/admin/groups/${groupId}/members`, // Dynamic URL path
+    `/api/groups/${groupId}/members`, // Dynamic URL path
     'GET', // Method
     thunkAPI, // Pass the thunk API object
     { loadingMessage: `Loading members for group ${groupId}...` } // Options

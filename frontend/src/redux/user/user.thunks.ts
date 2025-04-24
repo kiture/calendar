@@ -64,9 +64,10 @@ export const createUser = createAsyncThunk<
   CreateUserCommand,
   AsyncThunkConfig
 >('user/createUser', async (userData, thunkAPI) => {
-  return makeApiRequest<UserDto>('/api/admin/users', 'POST', thunkAPI, {
+  return makeApiRequest<UserDto>('/api/users', 'POST', thunkAPI, {
     data: userData,
     loadingMessage: 'Creating user...',
+    tokenRequired: false,
   });
 });
 

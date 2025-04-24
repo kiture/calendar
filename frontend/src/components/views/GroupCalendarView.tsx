@@ -13,6 +13,8 @@ import { pl } from 'date-fns/locale/pl'; // Polish locale
 // Assuming this thunk exists
 import { selectEventsForActiveGroup } from '../../redux/events/event.selectors'; // Assuming these selectors exist
 import { EventDto } from '../../types/EventDto'; // Assuming EventDto type exists
+import { selectSelectedGroupId } from '../../redux/group/group.selectors';
+import { Button } from '../ui/Button';
 
 // Setup the localizer by providing the required functions
 const locales = {
@@ -38,6 +40,7 @@ interface CalendarEvent {
 export function GroupCalendarView() {
   const navigate = useNavigate();
   const eventsFromStore = useSelector(selectEventsForActiveGroup);
+  const selectedGroupId = useSelector(selectSelectedGroupId);
 
   const calendarEvents: CalendarEvent[] = useMemo(() => {
     return eventsFromStore.map(
@@ -52,6 +55,21 @@ export function GroupCalendarView() {
       })
     );
   }, [eventsFromStore]);
+
+  if (!selectedGroupId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] space-y-4">
+        <h2 className="text-xl font-semibold text-center">No Group Selected</h2>
+        <p className="text-gray-600 text-center max-w-md">
+          Please select or create a group first to view its calendar. You can
+          manage your groups in the groups menu.
+        </p>
+        <Button onClick={() => navigate('/groups')} className="mt-4">
+          Go to Groups
+        </Button>
+      </div>
+    );
+  }
 
   const handleSelectEvent = (event: CalendarEvent) => {
     // Try event.resource.event_id as the identifier
@@ -74,8 +92,6 @@ export function GroupCalendarView() {
 
   // Handler for selecting a day slot
   const handleSelectSlot = (slotInfo: SlotInfo) => {
-    // slotInfo contains start, end, slots, action (e.g., 'click', 'select')
-    console.log('Selected slot start date:', slotInfo.start);
     // Navigate to the create event form view, passing the selected date
     navigate('/event/new', { state: { selectedDate: slotInfo.start } });
   };
