@@ -7,8 +7,8 @@ import express, {
 import { query as queryValidator, validationResult } from 'express-validator';
 import authenticateToken, {
   AuthRequest,
-} from '../../middleware/authMiddleware';
-import { OpenRouterService } from '../../services/openrouter.service';
+} from '../../middleware/authMiddleware.js';
+import { OpenRouterService } from '../../services/openrouter.service.js';
 
 // Initialize OpenRouter service
 const openRouter = new OpenRouterService({

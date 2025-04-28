@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { query } from '../../db/database'; // Import the database query function
+import { query } from '../../db/database.js'; // Import the database query function
 
 // --- Placeholder Controller (Replace with actual imports and implementations) ---
 const adminRoleController = {

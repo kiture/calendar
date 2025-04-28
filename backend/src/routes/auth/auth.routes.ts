@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { query } from '../../db/database'; // Adjusted path: ../db/database -> ../../db/database
+import { query } from '../../db/database.js'; // Adjusted path: ../db/database -> ../../db/database
 import bcrypt from 'bcrypt'; // Needed for password comparison
 import jwt from 'jsonwebtoken'; // Needed for JWT generation
 import dotenv from 'dotenv';

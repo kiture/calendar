@@ -2,8 +2,15 @@ import pg from 'pg';
 const { Pool } = pg;
 type QueryResult = pg.QueryResult;
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+// ES Module dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from root directory
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // Create a PostgreSQL connection pool
 // The pool manages multiple client connections

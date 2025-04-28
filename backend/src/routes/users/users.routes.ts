@@ -6,7 +6,7 @@ import express, {
 } from 'express';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
-import { query } from '../../db/database';
+import { query } from '../../db/database.js';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -89,11 +89,9 @@ const userController = {
 
     // Prevent password updates via this endpoint for security
     if (updates.password) {
-      res
-        .status(400)
-        .json({
-          message: 'Password updates are not allowed via this endpoint.',
-        });
+      res.status(400).json({
+        message: 'Password updates are not allowed via this endpoint.',
+      });
       return;
     }
 

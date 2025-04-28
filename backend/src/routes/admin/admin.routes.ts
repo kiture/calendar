@@ -1,54 +1,30 @@
-import express, {
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
-import authenticateToken from '../../middleware/authMiddleware';
-// Import the specific request type if needed, or rely on casting if preferred
-import { AuthRequest } from '../../middleware/authMiddleware';
-import userRoutes from './user.routes';
-import groupRoutes from './group.routes';
-import roleRoutes from './role.routes';
+import { Router, RequestHandler } from 'express';
+import authenticateToken from '../../middleware/authMiddleware.js';
+import { AuthRequest } from '../../middleware/authMiddleware.js';
+import userRoutes from './user.routes.js';
+import groupRoutes from './group.routes.js';
+import roleRoutes from './role.routes.js';
 
-// --- Role Check Middleware Implementation ---
-const checkAdminRole = (req: Request, res: Response, next: NextFunction) => {
-  // Cast req to AuthRequest to access the user payload safely
-  const authReq = req as AuthRequest;
+const router = Router();
 
-  // Check if user payload exists and has the roleName property
-  if (authReq.user && authReq.user.roleName) {
-    if (authReq.user.roleName === 'admin') {
-      next(); // User is admin, proceed
-    } else {
-      // User is authenticated but not an admin
-      res
-        .status(403)
-        .json({ message: 'Forbidden: Administrator access required' });
-    }
-  } else {
-    // This case should ideally not happen if authenticateToken runs first and succeeds
-    // but it's good defensive programming.
-    console.error(
-      'User payload or roleName missing in checkAdminRole after authentication.'
-    );
-    res
-      .status(401)
-      .json({ message: 'Authentication data incomplete or invalid' });
-  }
-};
-// --- End Role Check Middleware ---
-
-const router = express.Router();
-
-// Apply authentication to all admin routes
+// Use authentication middleware for all admin routes
 router.use(authenticateToken as RequestHandler);
-// Apply admin role check to all admin routes
-router.use(checkAdminRole as RequestHandler); // Use the implemented middleware
 
-// Mount resource-specific routers
+// Check if user is admin
+const adminCheck: RequestHandler = async (req, res, next) => {
+  const authReq = req as AuthRequest;
+  if (authReq.user?.role_id !== '1') {
+    res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+    return;
+  }
+  next();
+};
+
+router.use(adminCheck);
+
+// Mount sub-routes
 router.use('/users', userRoutes);
-router.use('/groups', groupRoutes); // group.routes.ts handles /:groupId and /:groupId/members internally
+router.use('/groups', groupRoutes);
 router.use('/roles', roleRoutes);
 
 export default router;

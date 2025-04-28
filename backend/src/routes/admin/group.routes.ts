@@ -5,7 +5,7 @@ import express, {
   RequestHandler,
 } from 'express';
 import { param, validationResult } from 'express-validator';
-import { query } from '../../db/database';
+import { query } from '../../db/database.js';
 
 // --- Controller Implementations ---
 const adminGroupController = {

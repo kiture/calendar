@@ -27,6 +27,24 @@ Na podstawie decyzji projektowych, wybrany został następujący stos technologi
   - _Uzasadnienie:_ Umożliwia integrację z wieloma modelami językowymi (np. GPT-4, Llama 2) poprzez zunifikowane API OpenRouter. Zapewnia elastyczne zarządzanie kluczami API, obsługę różnych endpointów oraz automatyczne dokonywanie failover między modelami.
     **Komunikacja:** Biblioteka będzie wykorzystywana po stronie backendu. Frontend wysyła żądania do backendu, który następnie przekazuje je do OpenRouter API i zwraca odpowiedzi do frontendu.
 
+## Testowanie
+
+- **Testy Jednostkowe i Integracyjne:**
+
+  - **Framework:** Vitest
+    - _Uzasadnienie:_ Natywna integracja z Vite, szybsze wykonanie testów, lepsza obsługa modułów ESM.
+  - **Biblioteka Testowania Komponentów:** React Testing Library
+    - _Uzasadnienie:_ Standardowa biblioteka do testowania komponentów React, skupiona na testowaniu zachowania z perspektywy użytkownika.
+
+- **Testy E2E:**
+
+  - **Framework:** Playwright
+    - _Uzasadnienie:_ Nowoczesne narzędzie do testów E2E, oferujące lepszą niezawodność, wbudowane możliwości debugowania i wsparcie dla wielu silników przeglądarek.
+
+- **Testy Wydajnościowe:**
+  - **Narzędzie:** k6
+    - _Uzasadnienie:_ Wydajne narzędzie do testów obciążeniowych, z możliwością skryptowania w JavaScript.
+
 ---
 
 Ten dokument definiuje kluczowe technologie, które mają zostać wykorzystane podczas generowania lub inicjalizacji struktury projektu aplikacji.

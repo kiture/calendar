@@ -9,7 +9,7 @@ import {
   query as queryValidator,
   validationResult,
 } from 'express-validator';
-import { query } from '../../db/database';
+import { query } from '../../db/database.js';
 
 // --- Controller Implementation ---
 const adminUserController = {

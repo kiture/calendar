@@ -7,8 +7,8 @@ import express, {
 import { body, param, validationResult } from 'express-validator';
 import authenticateToken, {
   AuthRequest,
-} from '../../middleware/authMiddleware';
-import pool from '../../db/database'; // Import pool for direct client usage
+} from '../../middleware/authMiddleware.js';
+import pool from '../../db/database.js'; // Import pool for direct client usage
 
 // --- Controller Implementation ---
 const eventController = {

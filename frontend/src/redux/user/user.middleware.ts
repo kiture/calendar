@@ -11,7 +11,7 @@ export const userListenerMiddleware = createListenerMiddleware();
 
 userListenerMiddleware.startListening({
   matcher: isAnyOf(loginUser.fulfilled),
-  effect: async (action, listenerApi) => {
+  effect: async (_, listenerApi) => {
     // Get the state *after* the login action was processed
     const state = listenerApi.getState() as RootState;
 
