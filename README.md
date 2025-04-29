@@ -106,15 +106,17 @@ npm run preview
 ### Testy jednostkowe i integracyjne
 
 # Frontend
+
 cd frontend
 npm run test
-```
+
+````
 
 ### Testy E2E
 
 ```bash
 npm run test:e2e
-```
+````
 
 ## Dokumentacja
 

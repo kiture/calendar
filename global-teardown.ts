@@ -31,4 +31,4 @@ async function globalTeardown() {
   }
 }
 
-export default globalTeardown; 
+export default globalTeardown;

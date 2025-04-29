@@ -14,7 +14,9 @@ router.use(authenticateToken as RequestHandler);
 const adminCheck: RequestHandler = async (req, res, next) => {
   const authReq = req as AuthRequest;
   if (authReq.user?.role_id !== '1') {
-    res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+    res
+      .status(403)
+      .json({ message: 'Access denied. Admin privileges required.' });
     return;
   }
   next();
