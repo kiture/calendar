@@ -15,16 +15,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/types": ["src/types"],
-      "@shared/types/*": ["src/types/*"]
-    }
+    "types": ["vitest/globals"]
   },
-  "files": [],
+  "include": ["src/**/*", "src/types/**/*", "../env.d.ts"],
   "references": [
-    { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ],
-  "include": ["src/**/*", "src/types/**/*", "../env.d.ts", "e2e"]
+  ]
 }
