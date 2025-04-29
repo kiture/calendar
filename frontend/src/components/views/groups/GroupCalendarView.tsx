@@ -11,10 +11,10 @@ import {
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { pl } from 'date-fns/locale/pl'; // Polish locale
 // Assuming this thunk exists
-import { selectEventsForActiveGroup } from '../../redux/events/event.selectors'; // Assuming these selectors exist
-import { EventDto } from '../../types/EventDto'; // Assuming EventDto type exists
-import { selectSelectedGroupId } from '../../redux/group/group.selectors';
-import { Button } from '../ui/Button';
+import { selectEventsForActiveGroup } from '../../../redux/events/event.selectors'; // Assuming these selectors exist
+import { EventDto } from '../../../types/EventDto'; // Assuming EventDto type exists
+import { selectSelectedGroupId } from '../../../redux/group/group.selectors';
+import { Button } from '../../ui/button/Button';
 
 // Setup the localizer by providing the required functions
 const locales = {

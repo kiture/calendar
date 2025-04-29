@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
+import { AppDispatch } from '../../../redux/store';
+import { Input } from '../../ui/input/Input';
+import { Button } from '../../ui/button/Button';
 import { useNavigate } from 'react-router-dom';
-import { createUser } from '../../redux/user/user.thunks';
-import { setAppError } from '../../redux/app/app.reducer';
+import { createUser } from '../../../redux/user/user.thunks';
+import { setAppError } from '../../../redux/app/app.reducer';
 
 export function RegisterView() {
   const dispatch = useDispatch<AppDispatch>();

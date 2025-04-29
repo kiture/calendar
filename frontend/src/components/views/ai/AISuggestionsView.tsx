@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch, store } from '../../redux/store';
-import { fetchEventSuggestions } from '../../redux/ai/ai.thunks';
-import { AISuggestionDto } from '../../types/AISuggestionDto';
-import { selectSelectedGroupId } from '../../redux/group/group.selectors';
-import { createEventInGroup } from '../../redux/events/event.thunks';
+import { AppDispatch, store } from '../../../redux/store';
+import { fetchEventSuggestions } from '../../../redux/ai/ai.thunks';
+import { AISuggestionDto } from '../../../types/AISuggestionDto';
+import { selectSelectedGroupId } from '../../../redux/group/group.selectors';
+import { createEventInGroup } from '../../../redux/events/event.thunks';
 
 interface FormData {
   startDate: string;

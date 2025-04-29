@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import {
   selectSelectedGroupId,
   selectUserGroups,
-} from '../../redux/group/group.selectors';
-import { setSelectedGroupId } from '../../redux/group/group.reducer';
+} from '../../../redux/group/group.selectors';
+import { setSelectedGroupId } from '../../../redux/group/group.reducer';
 
 export const GroupsManagementView: React.FC = () => {
   const groups = useSelector(selectUserGroups);

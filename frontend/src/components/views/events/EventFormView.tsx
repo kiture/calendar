@@ -3,19 +3,19 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns'; // Import parseISO
 
-import { AppDispatch, RootState } from '../../redux/store';
-import { selectEventById } from '../../redux/events/event.selectors';
-import { selectSelectedGroupId } from '../../redux/group/group.selectors'; // Assume this exists
+import { AppDispatch, RootState } from '../../../redux/store';
+import { selectEventById } from '../../../redux/events/event.selectors';
+import { selectSelectedGroupId } from '../../../redux/group/group.selectors'; // Assume this exists
 import {
   updateEvent,
   createEventInGroup,
-} from '../../redux/events/event.thunks';
-import { CreateEventCommand } from '../../types/CreateEventCommand';
-import { UpdateEventCommand } from '../../types/UpdateEventCommand';
+} from '../../../redux/events/event.thunks';
+import { CreateEventCommand } from '../../../types/CreateEventCommand';
+import { UpdateEventCommand } from '../../../types/UpdateEventCommand';
 
-import { Input } from '../ui/Input';
-import { Textarea } from '../ui/Textarea'; // Assuming Textarea component exists
-import { Button } from '../ui/Button';
+import { Input } from '../../ui/input/Input';
+import { Textarea } from '../../ui/textarea/Textarea'; // Assuming Textarea component exists
+import { Button } from '../../ui/button/Button';
 
 export function EventFormView() {
   const { eventId } = useParams<{ eventId: string }>();

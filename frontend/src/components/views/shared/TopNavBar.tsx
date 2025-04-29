@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   selectIsLoggedIn,
   selectUserIsAdmin,
-} from '../../redux/user/user.selectors';
-import { logoutUser } from '../../redux/user/user.reducer';
-import { AppDispatch } from '../../redux/store';
+} from '../../../redux/user/user.selectors';
+import { logoutUser } from '../../../redux/user/user.reducer';
+import { AppDispatch } from '../../../redux/store';
 import { useState } from 'react';
 
 // Placeholder Top Navigation Bar

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { selectAppLoading } from '../../redux/app/app.selectors';
+import { selectAppLoading } from '../../../redux/app/app.selectors';
 
 export function LoadingOverlayView() {
   const message = useSelector(selectAppLoading);

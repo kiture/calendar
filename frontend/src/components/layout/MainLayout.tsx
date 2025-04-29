@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import { TopNavBar } from './TopNavBar';
-import { Footer } from './Footer';
+import { TopNavBar } from '../views/shared/TopNavBar';
+import { Footer } from '../views/shared/Footer';
 
 // Main Layout for authenticated users
 export function MainLayout() {

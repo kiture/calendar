@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAllGroups } from '../../redux/group/group.selectors';
-import { createGroup, updateGroup } from '../../redux/group/group.thunks';
-import { AppDispatch } from '../../redux/store';
+import { selectAllGroups } from '../../../redux/group/group.selectors';
+import { createGroup, updateGroup } from '../../../redux/group/group.thunks';
+import { AppDispatch } from '../../../redux/store';
 
 export const GroupFormView: React.FC = () => {
   const { groupId } = useParams();

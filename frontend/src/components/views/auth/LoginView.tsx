@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store'; // Adjust path if needed
-import { loginUser } from '../../redux/user/user.thunks';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
+import { AppDispatch } from '../../../redux/store'; // Adjust path if needed
+import { loginUser } from '../../../redux/user/user.thunks';
+import { Input } from '../../ui/input/Input';
+import { Button } from '../../ui/button/Button';
 import { useNavigate } from 'react-router-dom';
 
 export function LoginView() {

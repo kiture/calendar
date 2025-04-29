@@ -3,12 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale/pl';
 
-import { AppDispatch } from '../../redux/store';
+import { AppDispatch } from '../../../redux/store';
 // Assume these exist or create them:
-import { selectCurrentUserEvents } from '../../redux/events/event.selectors';
-import { leaveEvent, deleteEvent } from '../../redux/events/event.thunks';
-import { EventDto } from '../../types/EventDto';
-import { Button } from '../ui/Button';
+import { selectCurrentUserEvents } from '../../../redux/events/event.selectors';
+import { leaveEvent, deleteEvent } from '../../../redux/events/event.thunks';
+import { EventDto } from '../../../types/EventDto';
+import { Button } from '../../ui/button/Button';
 
 export function MyEventsView() {
   const dispatch = useDispatch<AppDispatch>();

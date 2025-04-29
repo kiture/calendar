@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAppError } from '../../redux/app/app.selectors';
-import { setAppIdle } from '../../redux/app/app.reducer';
-import { AppDispatch } from '../../redux/store';
+import { selectAppError } from '../../../redux/app/app.selectors';
+import { setAppIdle } from '../../../redux/app/app.reducer';
+import { AppDispatch } from '../../../redux/store';
 
 export function ErrorOverlayView(): React.ReactNode {
   const errorMessage = useSelector(selectAppError);

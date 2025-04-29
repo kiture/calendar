@@ -3,19 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale/pl';
 
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch, RootState } from '../../../redux/store';
 import {
   selectEventById,
   selectEventAttendeesByEventId,
   selectUserIsAttendingEvent,
-} from '../../redux/events/event.selectors';
+} from '../../../redux/events/event.selectors';
 import {
   joinEvent,
   leaveEvent,
   deleteEvent,
-} from '../../redux/events/event.thunks';
-import { AttendeeDetailsDto } from '../../types/AttendeeDetailsDto';
-import { Button } from '../ui/Button';
+} from '../../../redux/events/event.thunks';
+import { AttendeeDetailsDto } from '../../../types/AttendeeDetailsDto';
+import { Button } from '../../ui/button/Button';
 
 export function EventDetailsView() {
   const { eventId } = useParams<{ eventId: string }>();
