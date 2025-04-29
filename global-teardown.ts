@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { TEST_USER_EMAIL } from './global-setup';
+import { TEST_USER_EMAIL } from './global-setup.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load .env from root directory
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 async function globalTeardown() {
   const pool = new Pool({
@@ -31,4 +31,4 @@ async function globalTeardown() {
   }
 }
 
-export default globalTeardown;
+export default globalTeardown; 

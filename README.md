@@ -23,7 +23,6 @@ Aplikacja do zarządzania kalendarzem grupowym z integracją AI, umożliwiająca
 
 - Vitest + React Testing Library (testy jednostkowe i integracyjne)
 - Playwright (testy E2E)
-- k6 (testy wydajnościowe)
 
 ## Wymagania systemowe
 
@@ -106,11 +105,6 @@ npm run preview
 
 ### Testy jednostkowe i integracyjne
 
-```bash
-# Backend
-cd backend
-npm run test
-
 # Frontend
 cd frontend
 npm run test
@@ -119,22 +113,7 @@ npm run test
 ### Testy E2E
 
 ```bash
-# Uruchom aplikację w trybie testowym
-cd backend
-npm run dev
-
-cd ../frontend
-npm run dev
-
-# W osobnym terminalu uruchom testy E2E
 npm run test:e2e
-```
-
-### Testy wydajnościowe
-
-```bash
-cd backend
-npm run test:perf
 ```
 
 ## Dokumentacja
