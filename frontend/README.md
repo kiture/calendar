@@ -14,19 +14,13 @@ The frontend of the AI Group Calendar is built using React, TailwindCSS, and Red
 
 To set up the frontend locally, follow these steps:
 
-1. **Navigate to the frontend directory**:
-
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**:
+1. **Install dependencies**:
 
    ```bash
    npm install
    ```
 
-3. **Run the development server**:
+2. **Run the development server**:
    ```bash
    npm run dev
    ```

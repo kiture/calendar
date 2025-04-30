@@ -2,26 +2,32 @@
 
 This document outlines the REST API design for the Group Calendar AI application based on the provided database schema, PRD, and tech stack.
 
-## 1. Resources
+## 1. Base Path
 
-The main resources identified for this API are:
+All endpoints are prefixed with `/api`. For example:
+- Authentication endpoints start with `/api/auth`
+- Admin endpoints start with `/api/admin`
+- Group endpoints start with `/api/groups`
+- Event endpoints start with `/api/events`
+- AI endpoints start with `/api/ai`
+
+## 2. Resources
+
+The main resources in the current implementation are:
 
 - **Auth:** Handles user authentication. (Related to `users` table for credentials).
 - **Users:** Represents user accounts (primarily managed by Admins). Maps to the `users` table.
-- **Roles:** Represents user roles. Maps to the `roles` table (likely read-only via API for context).
+- **Roles:** Represents user roles. Maps to the `roles` table (read-only via API).
 - **Groups:** Represents user groups. Maps to the `groups` table.
-- **Group Memberships:** Represents the relationship between users and groups. Maps to the `group_memberships` table.
 - **Events:** Represents calendar events within groups. Maps to the `events` table.
 - **Event Attendance:** Represents user participation in events. Maps to the `event_attendance` table.
-- **AI Suggestions:** Represents interactions with the AI for event suggestions. (Does not map directly to a persistent table, interacts with external AI service).
+- **AI Suggestions:** Represents interactions with the AI for event suggestions using OpenRouter integration.
 
-## 2. Endpoints
-
----
+## 3. Endpoints
 
 ### Auth Resource
 
-- **POST /auth/login**
+- **POST /api/auth/login**
   - **Description:** Authenticates a user and returns a JWT along with additional user information.
   - **Request Body:**
     ```json
@@ -47,47 +53,35 @@ The main resources identified for this API are:
   - **Success Code:** 200 OK
   - **Error Codes:** 400 Bad Request (Invalid input), 401 Unauthorized (Invalid credentials)
 
----
+### Admin Resource
 
-### Users Resource (Admin Only)
+#### Roles
 
-- **POST /admin/users**
-
-  - **Description:** Creates a new user (Admin only). Password handling mechanism (e.g., sending activation link) is TBD by application logic.
-  - **Request Body:**
-    ```json
-    {
-      "email": "newuser@example.com",
-      "login": "newuserlogin",
-      "password": "initialTemporaryPassword", // Or handle activation differently
-      "first_name": "New",
-      "last_name": "User",
-      "role_id": "uuid-for-standard-role"
-    }
-    ```
+- **GET /api/admin/roles**
+  - **Description:** Lists all available roles (Admin only).
   - **Response Body (Success):**
     ```json
-    {
-      "user_id": "generated-uuid",
-      "email": "newuser@example.com",
-      "login": "newuserlogin",
-      "first_name": "New",
-      "last_name": "User",
-      "role_id": "uuid-for-standard-role",
-      "created_at": "timestamp",
-      "updated_at": "timestamp"
-      // DO NOT return password_hash
-    }
+    [
+      {
+        "role_id": "uuid",
+        "role_name": "admin"
+      },
+      {
+        "role_id": "uuid",
+        "role_name": "standard"
+      }
+    ]
     ```
-  - **Success Code:** 201 Created
-  - **Error Codes:** 400 Bad Request (Validation errors, duplicate email), 401 Unauthorized, 403 Forbidden (Not an Admin)
+  - **Success Code:** 200 OK
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden
 
-- **GET /admin/users**
+#### Users
 
-  - **Description:** Retrieves a list of all users (Admin only). Supports pagination.
+- **GET /api/admin/users**
+  - **Description:** Lists all users with pagination (Admin only).
   - **Query Parameters:**
-    - `limit` (integer, default: 20): Number of users per page.
-    - `offset` (integer, default: 0): Number of users to skip.
+    - `limit` (integer, default: 20)
+    - `offset` (integer, default: 0)
   - **Response Body (Success):**
     ```json
     {
@@ -96,390 +90,218 @@ The main resources identified for this API are:
           "user_id": "uuid",
           "email": "user@example.com",
           "login": "userlogin",
-          "first_name": "FName",
-          "last_name": "LName",
+          "first_name": "First",
+          "last_name": "Last",
           "role_id": "role-uuid",
           "created_at": "timestamp",
           "updated_at": "timestamp"
         }
-        // ... more users
       ],
-      "total_count": 150 // Example total count for pagination
+      "total_count": 150
     }
     ```
   - **Success Code:** 200 OK
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not an Admin)
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden
 
-- **GET /admin/users/{userId}**
-
-  - **Description:** Retrieves details for a specific user (Admin only).
-  - **Response Body (Success):** (Similar structure to POST response, without password hash)
+- **GET /api/admin/users/{userId}**
+  - **Description:** Gets details of a specific user (Admin only).
+  - **Response Body:** Single user object as in list response
   - **Success Code:** 200 OK
   - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /admin/users/{userId}**
+#### Groups
 
-  - **Description:** Updates details for a specific user (Admin only). Can update email, login, names, role. Password update should likely be a separate flow.
-  - **Request Body:** (Subset of fields from POST, e.g.)
+- **GET /api/admin/groups**
+  - **Description:** Lists all groups (Admin only).
+  - **Response Body (Success):**
     ```json
-    {
-      "email": "updated@example.com",
-      "login": "updatedlogin",
-      "first_name": "Updated",
-      "last_name": "Name",
-      "role_id": "new-role-uuid"
-    }
+    [
+      {
+        "group_id": "uuid",
+        "group_name": "Group Name",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      }
+    ]
     ```
-  - **Response Body (Success):** (Updated user object, similar structure to POST response)
   - **Success Code:** 200 OK
-  - **Error Codes:** 400 Bad Request (Validation errors), 401 Unauthorized, 403 Forbidden, 404 Not Found
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden
 
-- **DELETE /admin/users/{userId}**
-  - **Description:** Deletes a specific user (Admin only). Database handles cascading deletes/set null based on schema.
-  - **Response Body (Success):** None
-  - **Success Code:** 204 No Content
+- **GET /api/admin/groups/{groupId}**
+  - **Description:** Gets details of a specific group (Admin only).
+  - **Response Body:** Single group object as in list response
+  - **Success Code:** 200 OK
   - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
-
----
 
 ### Groups Resource
 
-- **POST /admin/groups**
-
-  - **Description:** Creates a new group (Admin only).
-  - **Request Body:**
-    ```json
-    {
-      "group_name": "New Planning Group"
-    }
-    ```
+- **GET /api/groups**
+  - **Description:** Lists groups the authenticated user is a member of.
   - **Response Body (Success):**
     ```json
-    {
-      "group_id": "generated-uuid",
-      "group_name": "New Planning Group",
-      "created_at": "timestamp",
-      "updated_at": "timestamp"
-    }
-    ```
-  - **Success Code:** 201 Created
-  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden
-
-- **GET /groups**
-
-  - **Description:** Retrieves a list of groups the authenticated user is a member of. Filtered by RLS. Supports pagination.
-  - **Query Parameters:**
-    - `limit` (integer, default: 20)
-    - `offset` (integer, default: 0)
-  - **Response Body (Success):**
-    ```json
-    {
-      "groups": [
-        {
-          "group_id": "uuid",
-          "group_name": "My Group 1",
-          "created_at": "timestamp",
-          "updated_at": "timestamp"
-        }
-        // ... more groups
-      ],
-      "total_count": 5 // Example total count for pagination
-    }
+    [
+      {
+        "group_id": "uuid",
+        "group_name": "Group Name",
+        "created_at": "timestamp",
+        "updated_at": "timestamp"
+      }
+    ]
     ```
   - **Success Code:** 200 OK
   - **Error Codes:** 401 Unauthorized
 
-- **GET /admin/groups**
+- **POST /api/groups/{groupId}/events**
+  - **Description:** Creates a new event in a group.
+  - **Request Body:**
+    ```json
+    {
+      "title": "Event Title",
+      "start_time": "iso8601-timestamp",
+      "end_time": "iso8601-timestamp",
+      "place": "Location",
+      "description": "Description",
+      "is_ai_suggestion": false
+    }
+    ```
+  - **Response Body:** Created event object
+  - **Success Code:** 201 Created
+  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden
 
-  - **Description:** Retrieves a list of all groups (Admin only). Supports pagination.
-  - **Query Parameters:**
-    - `limit` (integer, default: 20)
-    - `offset` (integer, default: 0)
-  - **Response Body (Success):** (Similar to `GET /groups` but with all groups)
+- **GET /api/groups/{groupId}/events**
+  - **Description:** Lists events in a group.
+  - **Response Body:** Array of event objects
   - **Success Code:** 200 OK
   - **Error Codes:** 401 Unauthorized, 403 Forbidden
 
-- **GET /admin/groups/{groupId}**
-
-  - **Description:** Retrieves details for a specific group (Admin only).
-  - **Response Body (Success):** (Single group object structure)
-  - **Success Code:** 200 OK
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
-
-- **PUT /admin/groups/{groupId}**
-
-  - **Description:** Updates details for a specific group (Admin only).
-  - **Request Body:**
-    ```json
-    {
-      "group_name": "Updated Group Name"
-    }
-    ```
-  - **Response Body (Success):** (Updated group object structure)
-  - **Success Code:** 200 OK
-  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
-
-- **DELETE /admin/groups/{groupId}**
-  - **Description:** Deletes a specific group (Admin only). Database handles cascading deletes.
-  - **Response Body (Success):** None
-  - **Success Code:** 204 No Content
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
-
----
-
-### Group Memberships Resource (Admin Only)
-
-- **POST /admin/groups/{groupId}/members**
-
-  - **Description:** Adds a user to a specific group (Admin only).
-  - **Request Body:**
-    ```json
-    {
-      "user_id": "uuid-of-user-to-add"
-    }
-    ```
-  - **Response Body (Success):**
-    ```json
-    {
-      "user_id": "uuid-of-user-to-add",
-      "group_id": "uuid-of-group",
-      "joined_at": "timestamp"
-    }
-    ```
-  - **Success Code:** 201 Created
-  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found (Group or User), 409 Conflict (User already member)
-
-- **DELETE /admin/groups/{groupId}/members/{userId}**
-
-  - **Description:** Removes a user from a specific group (Admin only).
-  - **Response Body (Success):** None
-  - **Success Code:** 204 No Content
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found (Group, User, or Membership)
-
-- **GET /admin/groups/{groupId}/members**
-  - **Description:** Lists members of a specific group (Admin only). Supports pagination.
-  - **Query Parameters:**
-    - `limit` (integer, default: 20)
-    - `offset` (integer, default: 0)
-  - **Response Body (Success):**
-    ```json
-    {
-      "members": [
-        {
-          "user_id": "uuid",
-          "email": "member1@example.com",
-          "login": "member1",
-          "first_name": "Member",
-          "last_name": "One",
-          "joined_at": "timestamp"
-        }
-        // ... other members
-      ],
-      "total_count": 10
-    }
-    ```
-  - **Success Code:** 200 OK
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found (Group)
-
----
-
 ### Events Resource
 
-- **POST /groups/{groupId}/events**
-
-  - **Description:** Creates a new event within a specific group. User must be a member. `creator_user_id` is set to authenticated user.
-  - **Request Body:**
-    ```json
-    {
-      "title": "Team Meeting",
-      "start_time": "iso8601-timestamp", // e.g., "2023-10-27T10:00:00Z"
-      "place": "Conference Room A", // Optional
-      "description": "Discuss project progress", // Optional
-      "is_ai_suggestion": false // Optional, defaults to false
-    }
-    ```
+- **GET /api/events/{eventId}**
+  - **Description:** Gets details of a specific event.
   - **Response Body (Success):**
     ```json
     {
-      "event_id": "generated-uuid",
-      "group_id": "uuid-from-path",
-      "creator_user_id": "authenticated-user-uuid",
-      "title": "Team Meeting",
+      "event_id": "uuid",
+      "group_id": "uuid",
+      "creator_user_id": "uuid",
+      "title": "Event Title",
       "start_time": "iso8601-timestamp",
-      "place": "Conference Room A",
-      "description": "Discuss project progress",
+      "end_time": "iso8601-timestamp",
+      "place": "Location",
+      "description": "Description",
       "is_ai_suggestion": false,
       "created_at": "timestamp",
       "updated_at": "timestamp"
     }
     ```
-  - **Success Code:** 201 Created
-  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden (Not member of group), 404 Not Found (Group)
+  - **Success Code:** 200 OK
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /groups/{groupId}/events**
+- **PUT /api/events/{eventId}**
+  - **Description:** Updates an event.
+  - **Request Body:** Partial event object (fields to update)
+  - **Response Body:** Updated event object
+  - **Success Code:** 200 OK
+  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-  - **Description:** Retrieves events for a specific group the user is a member of. Supports date range filtering and pagination.
-  - **Query Parameters:**
-    - `startDate` (iso8601-date, optional): Filter events starting on or after this date.
-    - `endDate` (iso8601-date, optional): Filter events starting on or before this date.
-    - `limit` (integer, default: 50)
-    - `offset` (integer, default: 0)
-  - **Response Body (Success):**
+- **DELETE /api/events/{eventId}**
+  - **Description:** Deletes an event.
+  - **Response Body:**
     ```json
     {
-      "events": [
-        {
-          "event_id": "uuid",
-          "group_id": "uuid-from-path",
-          "creator_user_id": "creator-uuid",
-          "title": "Event Title",
-          "start_time": "iso8601-timestamp",
-          "place": "Location",
-          "description": "Details",
-          "is_ai_suggestion": false,
-          "created_at": "timestamp",
-          "updated_at": "timestamp"
-        }
-        // ... more events
-      ],
-      "total_count": 25
+      "event_id": "deleted-event-uuid"
     }
     ```
   - **Success Code:** 200 OK
-  - **Error Codes:** 400 Bad Request (Invalid date format), 401 Unauthorized, 403 Forbidden (Not member of group), 404 Not Found (Group)
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /events/{eventId}**
-
-  - **Description:** Retrieves details for a specific event. User must be a member of the event's group.
-  - **Response Body (Success):** (Single event object structure as in list response)
-  - **Success Code:** 200 OK
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found
-
-- **PUT /events/{eventId}**
-
-  - **Description:** Updates details for a specific event. User must be a member of the event's group (implements the "any member can edit" rule via RLS).
-  - **Request Body:** (Subset of fields from POST)
-    ```json
-    {
-      "title": "Updated Meeting Title",
-      "start_time": "new-iso8601-timestamp",
-      "place": "New Location",
-      "description": "Updated agenda"
-    }
-    ```
-  - **Response Body (Success):** (Updated event object structure)
-  - **Success Code:** 200 OK
-  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found
-
-- **DELETE /events/{eventId}**
-  - **Description:** Deletes a specific event. User must be a member of the event's group (implements the "any member can delete" rule via RLS).
-  - **Response Body (Success):** None
-  - **Success Code:** 204 No Content
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found
-
----
-
-### Event Attendance Resource
-
-- **POST /events/{eventId}/attendance**
-
-  - **Description:** Marks the authenticated user as attending a specific event. User must be a member of the event's group.
-  - **Request Body:** None
+- **POST /api/events/{eventId}/attendance**
+  - **Description:** Marks user as attending an event.
   - **Response Body (Success):**
     ```json
     {
-      "user_id": "authenticated-user-uuid",
-      "event_id": "uuid-from-path",
+      "user_id": "uuid",
+      "event_id": "uuid",
       "joined_at": "timestamp"
     }
     ```
-  - **Success Code:** 201 Created (or 200 OK if already attending)
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found (Event), 409 Conflict (Already attending)
+  - **Success Code:** 201 Created (or 200 if already attending)
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /events/{eventId}/attendance**
-
-  - **Description:** Removes the authenticated user's attendance from a specific event.
-  - **Request Body:** None
-  - **Response Body (Success):** None
-  - **Success Code:** 204 No Content
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found (Event or not attending)
-
-- **GET /events/{eventId}/attendees**
-  - **Description:** Retrieves a list of users attending a specific event. User must be a member of the event's group. Supports pagination.
-  - **Query Parameters:**
-    - `limit` (integer, default: 20)
-    - `offset` (integer, default: 0)
+- **DELETE /api/events/{eventId}/attendance**
+  - **Description:** Removes user's attendance from an event.
   - **Response Body (Success):**
     ```json
     {
-      "attendees": [
-        {
-          "user_id": "attendee1-uuid",
-          "login": "attendee1",
-          "first_name": "Attendee",
-          "last_name": "One",
-          "joined_at": "timestamp" // When they joined this specific event
-        }
-        // ... more attendees
-      ],
-      "total_count": 12
+      "event_id": "uuid",
+      "user_id": "uuid"
     }
     ```
   - **Success Code:** 200 OK
-  - **Error Codes:** 401 Unauthorized, 403 Forbidden (Not member of event's group), 404 Not Found (Event)
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
----
-
-### AI Suggestions Resource
-
-- **GET /ai/event-suggestions**
-  - **Description:** Fetches event suggestions from the external AI service based on user criteria. Backend handles communication with OpenRouter API.
-  - **Query Parameters:**
-    - `startDate` (iso8601-date): Required start date for search range.
-    - `endDate` (iso8601-date): Required end date for search range.
-    - `location` (string): Required location context (e.g., "Warsaw, Poland").
-    - `type` (string, optional): Type of event (e.g., "concert", "theater").
-  - **Response Body (Success):** (Structure depends heavily on AI response format)
+- **GET /api/events/{eventId}/attendees**
+  - **Description:** Lists attendees of an event.
+  - **Response Body (Success):**
     ```json
-    {
-      "suggestions": [
-        {
-          "title": "AI Suggested Event",
-          "date": "iso8601-date", // Or start/end times if available
-          "location": "Suggested Venue",
-          "description": "Brief description from AI",
-          "source_id": "optional-id-from-ai" // Optional, for potential tracking
-          // ... other relevant fields provided by AI
-        }
-        // ... more suggestions
-      ]
-    }
+    [
+      {
+        "user_id": "uuid",
+        "login": "userlogin",
+        "first_name": "First",
+        "last_name": "Last",
+        "joined_at": "timestamp",
+        "event_id": "uuid"
+      }
+    ]
     ```
   - **Success Code:** 200 OK
-  - **Error Codes:** 400 Bad Request (Missing required params, invalid format), 401 Unauthorized, 500 Internal Server Error (AI service error), 503 Service Unavailable (AI service timeout/unavailable)
+  - **Error Codes:** 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-## 3. Uwierzytelnianie i autoryzacja
+### AI Resource
 
-- **Authentication:** JWT (JSON Web Tokens) will be used.
-  - The `POST /auth/login` endpoint validates credentials and issues a signed JWT containing user information (e.g., `user_id`, `role_name` or `role_id`) and an expiration time.
-  - Clients must send the JWT in the `Authorization: Bearer <token>` header for all protected endpoints.
-  - A middleware on the Express.js backend will verify the JWT signature and expiration on incoming requests to protected routes.
-- **Authorization:** Implemented via a combination of:
-  - **Role-Based Access Control (RBAC):** Middleware checks the role claim within the validated JWT. Endpoints prefixed with `/admin/` require the 'admin' role.
-  - **Row-Level Security (RLS) in PostgreSQL:** As defined in the database schema, RLS policies restrict data access based on the user's ID and group memberships. The backend MUST securely set the PostgreSQL session context (e.g., `SET LOCAL myapp.user_id = '...'; SET LOCAL myapp.role_name = '...'`) for each request using the validated `user_id` and `role` from the JWT, allowing RLS policies (using `current_user_id()` and `current_user_role()` helper functions) to function correctly. Admins bypass most RLS checks based on their role.
+- **GET /api/ai/event-suggestions**
+  - **Description:** Gets event suggestions from OpenRouter AI.
+  - **Query Parameters:**
+    - `startDate` (iso8601-date, required)
+    - `endDate` (iso8601-date, required)
+    - `location` (string, required)
+    - `type` (string, optional)
+  - **Response Body (Success):**
+    ```json
+    [
+      {
+        "title": "Suggested Event",
+        "description": "Event Description",
+        "startTime": "iso8601-timestamp",
+        "endTime": "iso8601-timestamp",
+        "location": "Event Location",
+        "type": "event-type"
+      }
+    ]
+    ```
+  - **Success Code:** 200 OK
+  - **Error Codes:** 400 Bad Request, 401 Unauthorized, 500 Internal Server Error
 
-## 4. Walidacja i logika biznesowa
+## 4. Security Implementation
 
-- **Input Validation:** All incoming request data (query parameters, path parameters, request bodies) must be validated on the backend (Express.js) using a library like `express-validator`. Validation rules include:
-  - Required fields (based on `NOT NULL` in DB schema).
-  - Data types (string, integer, boolean, valid UUID, valid TIMESTAMPTZ/ISO8601 format).
-  - String lengths (based on `VARCHAR(n)` limits).
-  - Email format.
-  - Uniqueness constraints (e.g., `users.email`) checked against the database before insertion/update.
-- **Logika Biznesowa:**
-  - **User/Group Management:** Restricted to Admin users via RBAC on `/admin/*` endpoints.
-  - **Event Creation:** `creator_user_id` is automatically set to the authenticated user's ID. `is_ai_suggestion` flag handled based on input/endpoint used. Handled by `POST /groups/{groupId}/events`.
-  - **Event Access/Modification:** RLS enforces that users can only interact (view, update, delete, attend) with events belonging to groups they are members of. The "any member can edit/delete" rule is directly implemented via the RLS policy on the `events` table for UPDATE/DELETE.
-  - **Attendance:** `POST /events/{eventId}/attendance` and `DELETE /events/{eventId}/attendance` endpoints manage the `event_attendance` table records for the authenticated user. RLS ensures users only manage their own attendance within accessible events.
-  - **AI Suggestions:** `GET /ai/event-suggestions` encapsulates the logic of querying the OpenRouter API using provided parameters. `POST /groups/{groupId}/events` handles the creation of an event based on a chosen AI suggestion, setting the `is_ai_suggestion` flag.
-  - **Cascading Deletes:** Database `ON DELETE` actions handle cascading logic automatically when users or groups are deleted.
+### Authentication
+- JWT-based authentication
+- Token provided in Authorization header: `Bearer <token>`
+- All protected endpoints require valid JWT
+
+### Authorization
+- **Row Level Security (RLS):**
+  - Implemented at database level
+  - User context set via `SET LOCAL "myapp.user_id"` for each request
+  - Ensures users can only access their authorized data
+
+### Transaction Handling
+- All database operations use proper transaction management
+- COMMIT/ROLLBACK handling for data consistency
+- Client connection properly released after operations
+
+### Input Validation
+- Request validation using express-validator
+- Type checking and sanitization
+- Custom validation rules for specific endpoints

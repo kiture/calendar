@@ -2,137 +2,270 @@
 
 ## 1. Opis usługi
 
-Serwis `OpenRouterService` jest odpowiedzialny za komunikację z API OpenRouter w celu generowania odpowiedzi na podstawie rozmów LLM. Umożliwia przesyłanie wiadomości systemowych i użytkownika, otrzymywanie ustrukturyzowanych odpowiedzi w formacie JSON, wybór modelu oraz konfigurację parametrów modelu.
+Serwis `OpenRouterService` jest odpowiedzialny za komunikację z API OpenRouter w celu generowania sugestii wydarzeń w kalendarzu. Głównym zadaniem jest przetwarzanie zapytań o sugestie wydarzeń i zwracanie ustrukturyzowanych odpowiedzi w formacie JSON.
 
-## 2. Opis konstruktora
+## 2. Konfiguracja i Inicjalizacja
 
-```ts
-constructor(config: OpenRouterConfig)
+```typescript
+interface OpenRouterConfig {
+  apiKey: string;
+  defaultModel?: string;
+  baseUrl?: string;
+}
+
+const openRouter = new OpenRouterService({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultModel: process.env.OPENROUTER_MODEL,
+  baseUrl: process.env.OPENROUTER_BASE_URL,
+});
 ```
 
-- **Parametry**:
-  1. `apiKey: string` – klucz API do OpenRouter (przechowywany w zmiennych środowiskowych).
-  2. `baseUrl?: string` – podstawowy adres endpointu OpenRouter (domyślnie `https://api.openrouter.ai`).
-  3. `defaultModel?: string` – nazwa domyślnego modelu (np. `gpt-4o-mini`).
-  4. `defaultParams?: ModelParams` – domyślne parametry modelu (temperature, max_tokens itd.).
-- **Valdiacja**: Rzuca `InvalidConfigurationError` jeśli `apiKey` jest pusty lub ma nieprawidłowy format.
+## 3. Schema Walidacji Odpowiedzi
 
-## 3. Publiczne metody i pola
+```typescript
+const eventSuggestionsSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    suggestions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          title: { type: 'string' },
+          description: { type: 'string' },
+          startTime: { type: 'string' },
+          endTime: { type: 'string' },
+          location: { type: 'string' },
+          type: { type: 'string' },
+        },
+        required: [
+          'title',
+          'description',
+          'startTime',
+          'endTime',
+          'location',
+          'type',
+        ],
+      },
+    },
+  },
+  required: ['suggestions'],
+};
+```
 
-1. **`sendMessage(messages: ChatMessage[], options?: RequestOptions): Promise<ChatResponse>`**
-   - _Opis:_ Główna metoda wysyłająca `messages` (tablica obiektów `{ role: 'system'|'user', content: string }`) do OpenRouter.
-   - _Parametry:_
-     - `messages` – sekwencja wiadomości systemowych i użytkownika.
-     - `options.modelName?` – nadpisuje `defaultModel`.
-     - `options.modelParams?` – nadpisuje `defaultParams`.
-     - `options.responseFormat?` – np.:
-       ```json
-       {
-         "type": "json_schema",
-         "json_schema": {
-           "name": "MySchema",
-           "strict": true,
-           "schema": {
-             "type": "object",
-             "properties": { "answer": { "type": "string" } },
-             "required": ["answer"]
-           }
-         }
-       }
-       ```
-   - _Zwraca:_ Obiekt `ChatResponse` zawierający parsowane pola zgodne z zadanym `responseFormat`.
-2. **`getSupportedModels(): Promise<string[]>`**
-   - _Opis:_ Pobiera listę dostępnych modeli z OpenRouter.
+## 4. Interfejsy i Typy
 
-## 4. Prywatne metody i pola
+```typescript
+interface OpenRouterResponse {
+  choices: Array<{
+    message: {
+      content: string;
+    };
+  }>;
+}
 
-- **Pola prywatne**:
-  - `_apiKey: string`
-  - `_baseUrl: string`
-  - `_defaultModel: string`
-  - `_defaultParams: ModelParams`
-- **Metody prywatne**:
-  1. `_buildPayload(messages, modelName, modelParams, responseFormat): RequestPayload` – konstruuje ciało żądania.
-  2. `_validateResponse(raw: unknown, responseFormat): void` – weryfikuje odpowiedź pod kątem `response_format` i rzuca `ResponseFormatError` w razie niezgodności.
-  3. `_handleError(error: unknown): never` – mapuje błędy HTTP i sieciowe na `OpenRouterError`, `AuthenticationError`, `RateLimitError`.
-  4. `_logRequest(payload, response): void` – opcjonalnie logowanie dla audytu (implementowane jako middleware).
+interface AuthRequest extends Request {
+  user?: {
+    user_id: string;
+    role_id: string;
+  };
+}
+```
 
-## 5. Obsługa błędów
+## 5. Endpoint API
 
-1. **Błąd sieciowy (np. brak połączenia)**
-   - _Scenariusz:_ Brak dostępu do internetu lub timeout.
-   - _Rozwiązanie:_ Rzucić `NetworkError`, retry z backoff.
-2. **Błąd autoryzacji (401/403)**
-   - _Scenariusz:_ Nieprawidłowy lub wygasły klucz API.
-   - _Rozwiązanie:_ Rzucić `AuthenticationError`, zatrzymać dalsze próby.
-3. **Przekroczenie limitu (429)**
-   - _Scenariusz:_ Zbyt wiele żądań.
-   - _Rozwiązanie:_ Rzucić `RateLimitError`, retry po zadanym `Retry-After`.
-4. **Błąd formatu odpowiedzi**
-   - _Scenariusz:_ Odpowiedź nie spełnia `response_format`.
-   - _Rozwiązanie:_ Rzucić `ResponseFormatError` z detalami schematu.
-5. **Błąd wewnętrzny serwera (5xx)**
-   - _Scenariusz:_ Problemy po stronie OpenRouter.
-   - _Rozwiązanie:_ Rzucić `ServerError`, opcjonalny retry po krótkiej przerwie.
+### GET /api/event-suggestions
 
-## 6. Kwestie bezpieczeństwa
+#### Walidacja Parametrów
+```typescript
+const validateGetSuggestions = [
+  queryValidator('startDate')
+    .isISO8601()
+    .withMessage('Valid startDate (ISO8601 format) is required'),
+  queryValidator('endDate')
+    .isISO8601()
+    .withMessage('Valid endDate (ISO8601 format) is required'),
+  queryValidator('location')
+    .notEmpty()
+    .withMessage('Location query parameter is required'),
+  queryValidator('type')
+    .optional()
+    .isString()
+    .withMessage('Type must be a string'),
+];
+```
 
-- **Przechowywanie klucza API:** Używać `.env` i `dotenv`, nigdy nie commitować.
-- **Nagłówki HTTP:** Wymusić `Content-Type: application/json`, walidacja CORS.
-- **Rate limiting:** Środki ochronne na poziomie serwera (np. express-rate-limit).
-- **Sanityzacja wejścia:** Upewnić się, że treść wiadomości nie zawiera niebezpiecznych danych.
-- **Middleware:** Użyć `helmet` i `express-async-errors`.
+#### Obsługa Błędów Walidacji
+```typescript
+const handleValidationErrors: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+  next();
+};
+```
 
-## 7. Plan wdrożenia krok po kroku
+#### Kontroler
+```typescript
+const aiController = {
+  getSuggestions: async (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      if (!req.user) {
+        throw new Error('Authentication required');
+      }
 
-1. **Instalacja zależności**
+      const { startDate, endDate, location, type } = req.query;
+
+      const systemMessage = {
+        role: 'system',
+        content: `You are an AI event planner assistant. Generate event suggestions based on the given parameters.
+          Your response MUST strictly follow this JSON structure:
+          {
+            "suggestions": [
+              {
+                "title": "string",
+                "description": "string",
+                "startTime": "ISO8601 string",
+                "endTime": "ISO8601 string",
+                "location": "string",
+                "type": "string"
+              }
+            ]
+          }`,
+      };
+
+      const userMessage = {
+        role: 'user',
+        content: `Please suggest events with the following criteria:
+          - Time frame: between ${startDate} and ${endDate}
+          - Location: ${location}
+          ${type ? `- Type of event: ${type}` : ''}
+          Please provide 3-5 varied suggestions that would be interesting and feasible.`,
+      };
+
+      const response = await openRouter.sendMessage(
+        [systemMessage, userMessage],
+        {
+          responseFormat: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'EventSuggestionsSchema',
+              strict: true,
+              schema: eventSuggestionsSchema,
+            },
+          },
+        }
+      );
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No suggestions received from AI');
+      }
+
+      const parsedContent = JSON.parse(content);
+      res.status(200).json(parsedContent.suggestions);
+    } catch (error) {
+      next(error);
+    }
+  },
+};
+```
+
+## 6. Konfiguracja Routera
+
+```typescript
+const router = express.Router();
+
+// Wszystkie ścieżki wymagają uwierzytelnienia
+router.use(authenticateToken as RequestHandler);
+
+// GET /ai/event-suggestions
+router.get(
+  '/event-suggestions',
+  validateGetSuggestions,
+  handleValidationErrors,
+  aiController.getSuggestions
+);
+```
+
+## 7. Bezpieczeństwo i Uwierzytelnianie
+
+1. **Middleware Uwierzytelniania**
+   - Każde żądanie wymaga tokenu JWT
+   - Wykorzystanie middleware `authenticateToken`
+   - Weryfikacja obecności użytkownika w żądaniu
+
+2. **Walidacja Wejścia**
+   - Sprawdzanie formatu dat (ISO8601)
+   - Wymagane pole lokalizacji
+   - Opcjonalne pole typu wydarzenia
+   - Obsługa błędów walidacji
+
+3. **Bezpieczne Przetwarzanie Odpowiedzi**
+   - Walidacja schematu JSON
+   - Obsługa błędów parsowania
+   - Bezpieczne przekazywanie błędów do middleware
+
+## 8. Plan Wdrożenia
+
+1. **Zmienne Środowiskowe**
    ```bash
-   npm install openrouter axios zod express-async-errors
+   OPENROUTER_API_KEY=your_api_key
+   OPENROUTER_MODEL=gpt-4o-mini
+   OPENROUTER_BASE_URL=https://api.openrouter.ai
    ```
-2. **Konfiguracja środowiska**
-   - `.env`: `OPENROUTER_API_KEY=...`, `OPENROUTER_BASE_URL=https://api.openrouter.ai`
-3. **Utworzenie pliku serwisu**
-   - `backend/src/services/openrouter.service.ts`
-   - Zaimportować `openrouter` i `axios`.
-4. **Implementacja klasy `OpenRouterService`**
-   - Zaimplementować konstruktor, metody publiczne, prywatne według specyfikacji.
-5. **Dodanie middleware**
-   - W pliku `backend/src/index.ts` dodać `import 'express-async-errors'` i middleware błędów.
-   - Skonfigurować `helmet` i `rateLimit`.
-6. **Testy jednostkowe**
-   - `tests/services/openrouter.service.spec.ts`
-   - Mockować HTTP za pomocą `nock` lub `msw`, weryfikować poprawne mapowanie błędów i odpowiedzi.
-7. **Integracja z Redux/Frontend**
-   - Utworzyć thunk `generateAISuggestions` w `frontend/src/redux/ai/ai.thunks.ts`, wykorzystujący endpoint `/api/ai/chat`.
-   - Dodać UI w `frontend/src/components/views/AISuggestionsView.tsx`.
-8. **WDROŻENIE**
-   - Skonfigurować CI/CD (np. GitHub Actions) do budowy i deploymentu backendu.
-   - Upewnić się, że zmienne środowiskowe są ustawione na serwerze.
-   - Monitorować metryki (logi, czas odpowiedzi, błędy) za pomocą narzędzia APM.
 
----
+2. **Instalacja Zależności**
+   ```bash
+   npm install express-validator
+   ```
 
-_Przykłady konfiguracji payloadu:_
+3. **Struktura Plików**
+   ```
+   backend/
+   ├── src/
+   │   ├── routes/
+   │   │   └── ai/
+   │   │       └── ai.routes.ts
+   │   ├── services/
+   │   │   └── openrouter.service.ts
+   │   └── middleware/
+   │       └── authMiddleware.ts
+   ```
+
+4. **Testy**
+   - Testy jednostkowe dla walidacji
+   - Testy integracyjne dla endpointu
+   - Testy bezpieczeństwa (uwierzytelnianie)
+
+5. **Monitorowanie**
+   - Logowanie błędów AI
+   - Monitorowanie czasu odpowiedzi
+   - Śledzenie wykorzystania API
+
+## 9. Przykładowa Odpowiedź
 
 ```json
-{
-  "messages": [
-    { "role": "system", "content": "You are a helpful assistant." },
-    { "role": "user", "content": "Podsumuj poniższy tekst." }
-  ],
-  "model": "gpt-4o-mini",
-  "parameters": { "temperature": 0.7, "max_tokens": 500 },
-  "response_format": {
-    "type": "json_schema",
-    "json_schema": {
-      "name": "SummarySchema",
-      "strict": true,
-      "schema": {
-        "type": "object",
-        "properties": { "summary": { "type": "string" } },
-        "required": ["summary"]
-      }
-    }
+[
+  {
+    "title": "Tech Conference 2024",
+    "description": "Annual technology conference featuring latest innovations",
+    "startTime": "2024-03-15T09:00:00Z",
+    "endTime": "2024-03-15T17:00:00Z",
+    "location": "Warsaw Expo Center",
+    "type": "business"
   }
-}
+]
 ```

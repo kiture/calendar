@@ -13,21 +13,21 @@ The backend of the AI Group Calendar is developed using Express.js and PostgreSQ
 
 To set up the backend locally, follow these steps:
 
-1. **Navigate to the backend directory**:
-
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies**:
+1. **Install dependencies**:
 
    ```bash
    npm install
    ```
+
+2. **Run database migrations**:
+   ```bash
+   npm run migration
+   ```
+   This will set up your database schema and initial data.
 
 3. **Run the backend server**:
    ```bash
    npm start
    ```
 
-This will start the backend server using ts-node, allowing it to handle API requests and interact with the database.
+This will start the backend server using tsx watch mode, allowing it to handle API requests and interact with the database.

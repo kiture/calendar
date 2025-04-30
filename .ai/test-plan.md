@@ -46,12 +46,6 @@ Celem testowania jest zapewnienie wysokiej jakości aplikacji AI Group Calendar,
 - Operacje na kalendarzu
 - Interakcje z sugestiami AI
 
-### Testy wydajnościowe
-
-- Czas odpowiedzi API
-- Wydajność zapytań do bazy danych
-- Optymalizacja ładowania frontendu
-
 ## 4. Scenariusze testowe
 
 ### Autoryzacja
@@ -105,7 +99,6 @@ Celem testowania jest zapewnienie wysokiej jakości aplikacji AI Group Calendar,
 1. Testy jednostkowe - wykonywane przy każdym commicie
 2. Testy integracyjne - wykonywane przy każdym PR
 3. Testy E2E - wykonywane przed każdym releasem
-4. Testy wydajnościowe - wykonywane raz w tygodniu
 
 ## 7. Kryteria akceptacji
 
@@ -113,12 +106,6 @@ Celem testowania jest zapewnienie wysokiej jakości aplikacji AI Group Calendar,
 
 - Frontend: minimum 80% pokrycia
 - Backend: minimum 85% pokrycia
-
-### Wydajność
-
-- Czas odpowiedzi API < 200ms
-- Czas ładowania strony < 2s
-- Time to Interactive < 3s
 
 ### Jakość kodu
 

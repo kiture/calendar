@@ -41,10 +41,6 @@ Na podstawie decyzji projektowych, wybrany został następujący stos technologi
   - **Framework:** Playwright
     - _Uzasadnienie:_ Nowoczesne narzędzie do testów E2E, oferujące lepszą niezawodność, wbudowane możliwości debugowania i wsparcie dla wielu silników przeglądarek.
 
-- **Testy Wydajnościowe:**
-  - **Narzędzie:** k6
-    - _Uzasadnienie:_ Wydajne narzędzie do testów obciążeniowych, z możliwością skryptowania w JavaScript.
-
 ---
 
 Ten dokument definiuje kluczowe technologie, które mają zostać wykorzystane podczas generowania lub inicjalizacji struktury projektu aplikacji.
